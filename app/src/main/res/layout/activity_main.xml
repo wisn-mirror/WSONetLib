@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/url"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:hint="url"
+                        android:text="http://wso2dev.hollywant.com:8280"
+                        android:textColor="#000"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/userName"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:hint="用户名"
+                        android:text="admin"
+                        android:textColor="#000"
+                        android:textSize="16dp" />
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:hint="密码"
+                        android:inputType="textPassword"
+                        android:text="admin"
+                        android:textColor="#000"
+                        android:textSize="16dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/getTAG"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="#19ec5f"
+                        android:gravity="center"
+                        android:text="getTAG"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/getPrem"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#a805fa"
+                        android:gravity="center"
+                        android:text="getPrem"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/register"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="#eca619"
+                        android:gravity="center"
+                        android:text="注册"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/getToken"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#d1fa05"
+                        android:gravity="center"
+                        android:text="token"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+                    <TextView
+                        android:id="@+id/refreshToken"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#05fa67"
+                        android:gravity="center"
+                        android:text="refreToken"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+                    <TextView
+                        android:id="@+id/loginOut"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#fa7705"
+                        android:gravity="center"
+                        android:text="loginOut"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/getConfig"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#fa7705"
+                        android:gravity="center"
+                        android:text="getConfig"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+                    <TextView
+                        android:id="@+id/getStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:background="#fa0573"
+                        android:gravity="center"
+                        android:text="getStatus"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+                    <TextView
+                        android:id="@+id/users"
+                        android:layout_width="0dp"
+                        android:layout_height="45dp"
+                        android:layout_weight="1"
+                        android:background="#19ec9f"
+                        android:gravity="center"
+                        android:text="Users"
+                        android:textColor="#fff"
+                        android:textSize="16dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/shareText"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="#53d105"
+            android:gravity="center"
+            android:text="分享请求结果"
+            android:textColor="#fff"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/shareTextdelete"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="#d17505"
+            android:gravity="center"
+            android:text="删除"
+            android:textColor="#fff"
+            android:textSize="16dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ScrollView
+            android:id="@+id/scroll_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:orientation="vertical"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/testResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:text=""
+                android:textColor="#fff" />
+        </ScrollView>
+    </LinearLayout>
+
+
+</LinearLayout>
