@@ -7,11 +7,8 @@ import com.google.gson.annotations.Expose;
  */
 
 public class UserTResponse {
-    @Expose
     public  String  id;
-    @Expose
     public  String  name;
-
 
     public UserTResponse() {
         super();

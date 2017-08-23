@@ -12,36 +12,35 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.want.wso2.agent.library.APIController;
-import com.want.wso2.agent.library.Constant;
-import com.want.wso2.agent.library.Network;
-import com.want.wso2.agent.library.bean.DeviceRequest;
-import com.want.wso2.agent.library.bean.DeviceResponse;
-import com.want.wso2.agent.library.bean.GetConfigResponse;
-import com.want.wso2.agent.library.bean.RegistrationProfileRequest;
-import com.want.wso2.agent.library.bean.RegisterResponse;
-import com.want.wso2.agent.library.bean.TokenRequest;
-import com.want.wso2.agent.library.bean.TokenResponse;
-import com.want.wso2.agent.library.interfaces.NetListener;
+import com.google.gson.Gson;
+import com.want.wso2.APIController;
+import com.want.wso2.Constant;
+import com.want.wso2.WSONet;
+import com.want.wso2.bean.BaseNetBean;
+import com.want.wso2.bean.DeviceRequest;
+import com.want.wso2.bean.DeviceResponse;
+import com.want.wso2.bean.GetConfigResponse;
+import com.want.wso2.bean.RegisterResponse;
+import com.want.wso2.bean.RegistrationProfileRequest;
+import com.want.wso2.bean.TokenRequest;
+import com.want.wso2.bean.TokenResponse;
+import com.want.wso2.callback.JsonCallback;
 
-import java.util.ArrayList;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import want.com.authtest.bean.MoreIndex;
-import want.com.authtest.bean.MoreIndexResponse;
 import want.com.authtest.bean.UserT;
 import want.com.authtest.bean.UserTResponse;
+import want.com.authtest.bean.UserTResponse2;
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     public static final String Result = "Result";
     public static final int GETTAG = 1;
     public static final int GETPREM = 2;
-    private TextView mTestResult, getTAG, getPrem, register, getToken,refreshToken, getConfig, shareText, shareTextdelete,
-            loginOut,getStatus;
+    private TextView mTestResult, getTAG, getPrem, register, getToken, refreshToken, getConfig, shareText,
+            shareTextdelete,
+            loginOut, getStatus;
     private EditText url, userName, password;
     private Context context;
     private static String[] SUBSCRIBED_API = new String[]{"android"};
@@ -126,8 +125,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
         String strUserName = userName.getText().toString();
         String strPassword = password.getText().toString();
         if (view == register) {
-            APIController apiController =new APIController();
-            String applicationName = Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
+            APIController apiController = new APIController();
+            String
+                    applicationName =
+                    Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
             RegistrationProfileRequest registrationProfileRequest = new RegistrationProfileRequest();
             registrationProfileRequest.setApplicationName(applicationName);
             registrationProfileRequest.setIsAllowedToAllDomains(false);
@@ -141,23 +142,23 @@ public class MainActivity extends Activity implements View.OnClickListener{
                                        public void onResponse(Call<RegisterResponse> call,
                                                               Response<RegisterResponse> response) {
                                            mRegisterResponse = response.body();
-                                           updateView("onResponse:"+mRegisterResponse.toJSON(), true);
+                                           updateView("onResponse:" + mRegisterResponse.toJSON(), true);
                                        }
 
                                        @Override
                                        public void onFailure(Call<RegisterResponse> call, Throwable t) {
-                                           updateView("onFailure:"+t.getMessage(), true);
+                                           updateView("onFailure:" + t.getMessage(), true);
 
                                        }
                                    });
         } else if (view == getToken) {
-           // initializeIDPLib(null, strUserName, strPassword, PERM);
-            if(mRegisterResponse == null){
+            // initializeIDPLib(null, strUserName, strPassword, PERM);
+            if (mRegisterResponse == null) {
                 toast(" please register");
-                return ;
+                return;
             }
-            APIController apiController =new APIController();
-            TokenRequest tokenRequest=new TokenRequest();
+            APIController apiController = new APIController();
+            TokenRequest tokenRequest = new TokenRequest();
             tokenRequest.setUsername(strUserName);
             tokenRequest.setPassword(strPassword);
             tokenRequest.setClientID(mRegisterResponse.getClient_id());
@@ -167,101 +168,106 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 @Override
                 public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
                     mTokenBody = response.body();
-                    updateView("onResponse:"+mTokenBody.toJSON(), true);
+                    updateView("onResponse:" + mTokenBody.toJSON(), true);
                 }
 
                 @Override
                 public void onFailure(Call<TokenResponse> call, Throwable t) {
-                    updateView("onFailure:"+t.getMessage(), true);
+                    updateView("onFailure:" + t.getMessage(), true);
                 }
             });
 
-        }else if(view==refreshToken){
-            if(mRegisterResponse == null&&mTokenBody==null){
+        } else if (view == refreshToken) {
+            if (mRegisterResponse == null && mTokenBody == null) {
                 toast(" please gettoken");
-                return ;
+                return;
             }
-            APIController apiController =new APIController();
-            TokenRequest tokenRequest=new TokenRequest();
+            APIController apiController = new APIController();
+            TokenRequest tokenRequest = new TokenRequest();
             tokenRequest.setUsername(strUserName);
             tokenRequest.setPassword(strPassword);
             tokenRequest.setClientID(mRegisterResponse.getClient_id());
             tokenRequest.setClientSecret(mRegisterResponse.getClient_secret());
             tokenRequest.setScope(PERM);
-            apiController.refreshToken(tokenRequest,mTokenBody.getRefresh_token(), new Callback<TokenResponse>() {
+            apiController.refreshToken(tokenRequest,
+                                       mTokenBody.getRefresh_token(),
+                                       new Callback<TokenResponse>() {
 
-                @Override
-                public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-                    mTokenBody = response.body();
-                    updateView("onResponse:"+mTokenBody.toJSON(), true);
+                                           @Override
+                                           public void onResponse(Call<TokenResponse> call,
+                                                                  Response<TokenResponse> response) {
+                                               mTokenBody = response.body();
+                                               updateView("onResponse:" + mTokenBody.toJSON(), true);
 
-                }
+                                           }
 
-                @Override
-                public void onFailure(Call<TokenResponse> call, Throwable t) {
-                    updateView("onFailure:"+t.getMessage(), true);
+                                           @Override
+                                           public void onFailure(Call<TokenResponse> call, Throwable t) {
+                                               updateView("onFailure:" + t.getMessage(), true);
 
-                }
-            });
+                                           }
+                                       });
         } else if (view == getConfig) {
-            if(mTokenBody==null){
+            if (mTokenBody == null) {
                 toast(" please gettoken");
-                return ;
+                return;
             }
-            APIController apiController =new APIController();
+            APIController apiController = new APIController();
             apiController.getConfig(mTokenBody.getAccess_token(), new Callback<GetConfigResponse>() {
                 @Override
                 public void onResponse(Call<GetConfigResponse> call, Response<GetConfigResponse> response) {
                     GetConfigResponse getConfigResponse = response.body();
-                    updateView("onResponse:"+getConfigResponse.toJSON(), true);
+                    updateView("onResponse:" + getConfigResponse.toJSON(), true);
                 }
 
                 @Override
                 public void onFailure(Call<GetConfigResponse> call, Throwable t) {
-                    updateView("onFailure:"+t.getMessage(), true);
+                    updateView("onFailure:" + t.getMessage(), true);
                 }
             });
         } else if (view == loginOut) {
-            if(mTokenBody==null){
+            if (mTokenBody == null) {
                 toast(" please gettoken");
-                return ;
+                return;
             }
-            APIController apiController =new APIController();
-            String applicationName = Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
-            apiController.loginOut(mTokenBody.getAccess_token(),applicationName, new Callback<String>() {
+            APIController apiController = new APIController();
+            String
+                    applicationName =
+                    Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
+            apiController.loginOut(mTokenBody.getAccess_token(), applicationName, new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    updateView("onResponse:"+response.body(), true);
+                    updateView("onResponse:" + response.body(), true);
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    updateView("onFailure:"+t.getMessage(), true);
+                    updateView("onFailure:" + t.getMessage(), true);
                 }
             });
-        }else if(view==getStatus){
-            if(mTokenBody==null){
+        } else if (view == getStatus) {
+            if (mTokenBody == null) {
                 toast(" please gettoken");
-                return ;
+                return;
             }
-            APIController apiController =new APIController();
-            DeviceRequest device=new DeviceRequest();
-            String imei=DeviceUtils.getDeviceName(context);
+            APIController apiController = new APIController();
+            DeviceRequest device = new DeviceRequest();
+            String imei = DeviceUtils.getDeviceName(context);
             device.setDescription(imei);
             device.setDeviceIdentifier(imei);
             device.setName(imei);
-            device.setEnrolmentInfo("admin","BYOD");
+            device.setEnrolmentInfo("admin", "BYOD");
             device.getProperties();
-            Log.e(TAG,device.toJSON());
+            Log.e(TAG, device.toJSON());
             apiController.upDeviceInfo(device, mTokenBody.getAccess_token(), new Callback<DeviceResponse>() {
                 @Override
                 public void onResponse(Call<DeviceResponse> call, Response<DeviceResponse> response) {
-                    updateView("onResponse:"+response.body(), true);
+                    updateView("onResponse:" + response.body(), true);
                 }
 
                 @Override
                 public void onFailure(Call<DeviceResponse> call, Throwable t) {
-                    updateView("onFailure:"+t.getMessage(), true);
+                    updateView("onFailure:" + t.getMessage(), true);
                 }
             });
         } else if (view == shareText) {
@@ -285,10 +291,82 @@ public class MainActivity extends Activity implements View.OnClickListener{
             intent.putExtra(ChrooseItemActivity.ChrooseTypeIsTAG, false);
             startActivityForResult(intent, GETPREM);
         } else if (view == mUsers) {
+            UserT user = new UserT(43241231, "wisn");
+            try {
+//                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
+//                        .tag("http://10.0.86.120:8080/WSS/app/test")
+//                        .upJson(new Gson().toJson(user))
+//                        .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
+//
+//                            @Override
+//                            public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+//                                updateView("onResponse:"+response.body(), true);
+//                            }
+//
+//                            @Override
+//                            public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+//                                super.onError(response);
+//                                updateView("onError:"+response.body(), true);
+//                            }
+//                        });
+                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
+                        .tag("http://10.0.86.120:8080/WSS/app/test")
+                        .params("id",123432)
+                        .params("name","wisn")
+                        .params("password","nihao")
+                        .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
+
+                            @Override
+                            public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+                                updateView("onResponse:"+response.body(), true);
+                            }
+
+                            @Override
+                            public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+                                super.onError(response);
+                                updateView("onError:"+response.body(), true);
+                            }
+                        });
+                /*WSONet.<UserTResponse2>post("http://10.0.86.120:8080/WSS/app/test")
+                        .tag("http://10.0.86.120:8080/WSS/app/test")
+                        .upJson(new Gson().toJson(user))
+                        .execute(new JsonCallback<UserTResponse2>() {
+
+                            @Override
+                            public void onSuccess(com.want.wso2.model.Response<UserTResponse2> response) {
+                                updateView("onResponse:"+response.body(), true);
+                            }
+
+                            @Override
+                            public void onError(com.want.wso2.model.Response<UserTResponse2> response) {
+                                super.onError(response);
+                                updateView("onError:"+response.body(), true);
+                            }
+                        });*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+//                    .execute(new AbsCallback<UserTResponse>(){
+//                        @Override
+//                        public void onSuccess(com.want.wso.model.Response<UserTResponse> response) {
+//
+//                        }
+//
+//                        @Override
+//                        public UserTResponse convertResponse(okhttp3.Response response) throws Throwable {
+//                            return null;
+//                        }
+//                    });
+
+
+
+
+            /*
             APIController apiController =new APIController();
             //String uid, String dateType, String roleid, int page
             MoreIndex moreIndex=new MoreIndex("20","day","1",1);
-           /* apiController.excutePost("yunwang_backend/services/machinerank/moreindex",
+           apiController.excutePost("yunwang_backend/services/machinerank/moreindex",
                                      moreIndex,
                                      MoreIndexResponse.class,
                                      new NetListener<MoreIndexResponse>() {
@@ -307,7 +385,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                                      });*/
 
             //String uid, String dateType, String roleid, int page
-            UserT user=new UserT(43241231,"wisn");
+            /*UserT user=new UserT(43241231,"wisn");
             apiController.excutePost("WSS/app/test",
                                      user,
                                      UserTResponse.class,
@@ -321,7 +399,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 public void onFailure(Throwable t, String resonseStr) {
                     updateView("onFailure:"+t.getMessage(), true);
                 }
-            });
+            });*/
 
 
             //新增测试接口
