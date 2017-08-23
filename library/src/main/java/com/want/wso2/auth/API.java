@@ -1,4 +1,4 @@
-package com.want.wso2;
+package com.want.wso2.auth;
 
 import com.want.wso2.bean.DeviceResponse;
 import com.want.wso2.bean.GetConfigResponse;

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.want.wso2;
+package com.want.wso2.auth;
 
 import com.want.wso2.bean.Token;
 

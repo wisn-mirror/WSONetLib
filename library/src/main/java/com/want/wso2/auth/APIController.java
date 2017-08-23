@@ -1,4 +1,4 @@
-package com.want.wso2;
+package com.want.wso2.auth;
 
 
 import android.util.Log;

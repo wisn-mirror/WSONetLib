@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +13,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.want.wso2.APIController;
+import com.want.wso2.auth.APIController;
 import com.want.wso2.Constant;
 import com.want.wso2.WSONet;
-import com.want.wso2.bean.BaseNetBean;
 import com.want.wso2.bean.DeviceRequest;
 import com.want.wso2.bean.DeviceResponse;
 import com.want.wso2.bean.GetConfigResponse;
@@ -25,19 +24,12 @@ import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
-import com.want.wso2.model.HttpParams;
-
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.want.wso2.request.PostRequest;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import want.com.authtest.bean.UserT;
-import want.com.authtest.bean.UserTResponse;
-import want.com.authtest.bean.UserTResponse2;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -308,6 +300,25 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                            public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
 //                                updateView("onResponse:"+response.body(), true);
 //                            }
+//{"machineId":11,"detailType":""}
+//                            @Override
+//                            public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+//                                super.onError(response);
+//                                updateView("onError:"+response.body(), true);
+//                            }
+//                        });
+//                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
+//                        .tag("http://10.0.86.120:8080/WSS/app/test")
+//                        .upObjectToJson(user)
+////                        .params("id",123432)
+////                        .params("name","wisn")
+////                        .params("password","nihao")
+//                        .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
+//
+//                            @Override
+//                            public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
+//                                updateView("onResponse:"+response.body(), true);
+//                            }
 //
 //                            @Override
 //                            public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
@@ -315,25 +326,38 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                                updateView("onError:"+response.body(), true);
 //                            }
 //                        });
-                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
-                        .tag("http://10.0.86.120:8080/WSS/app/test")
-                        .upObjectToJson(user)
-//                        .params("id",123432)
-//                        .params("name","wisn")
-//                        .params("password","nihao")
-                        .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
+                final PostRequest<String>
+                        stringPostRequest =
+                        WSONet.<String>post("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
+                                .tag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
+                                .upJson("{\"machineids\":11}");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(true){
+                            SystemClock.sleep(100);
+                            stringPostRequest.execute(new JsonCallback<String>(){
 
-                            @Override
-                            public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
-                                updateView("onResponse:"+response.body(), true);
-                            }
+                                @Override
+                                public void onSuccess(com.want.wso2.model.Response<String> response) {
+                                    updateView("onResponse:"+response.body(), true);
 
-                            @Override
-                            public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
-                                super.onError(response);
-                                updateView("onError:"+response.body(), true);
-                            }
-                        });
+                                }
+
+                                @Override
+                                public void onError(com.want.wso2.model.Response<String> response) {
+                                    super.onError(response);
+                                    updateView("onError:"+response.body(), true);
+
+                                }
+                            });
+                            WSONet.getInstance().cancelTag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail");
+
+                        }
+
+                    }
+                }).start();
+
 //
                 /*LinkedHashMap<String, List<String>>
                         urlParamsMap =
