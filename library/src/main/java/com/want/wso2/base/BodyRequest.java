@@ -5,10 +5,10 @@ package com.want.wso2.base;
  */
 
 import android.text.TextUtils;
-
 import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpParams;
 import com.want.wso2.utils.HttpUtils;
+import com.want.wso2.utils.JsonConvertor;
 import com.want.wso2.utils.OkLogger;
 
 import org.json.JSONArray;
@@ -23,7 +23,7 @@ import java.util.List;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-public  abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R> implements HasBody<R> {
+public abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R> implements HasBody<R> {
     private static final long serialVersionUID = -6459175248476927501L;
 
     protected transient MediaType mediaType;        //上传的MIME类型
@@ -120,7 +120,15 @@ public  abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, 
     @SuppressWarnings("unchecked")
     @Override
     public R upJson(String json) {
-        this.content = json;
+        this.content = getContentJson(json);
+        this.mediaType = HttpParams.MEDIA_TYPE_JSON;
+        return (R) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public R upObjectToJson(Object object) {
+        this.content = getContentJson(JsonConvertor.getInstance().toJson(object));
         this.mediaType = HttpParams.MEDIA_TYPE_JSON;
         return (R) this;
     }
@@ -129,7 +137,7 @@ public  abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, 
     @SuppressWarnings("unchecked")
     @Override
     public R upJson(JSONObject jsonObject) {
-        this.content = jsonObject.toString();
+        this.content = getContentJson(jsonObject.toString());
         this.mediaType = HttpParams.MEDIA_TYPE_JSON;
         return (R) this;
     }
@@ -138,10 +146,26 @@ public  abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, 
     @SuppressWarnings("unchecked")
     @Override
     public R upJson(JSONArray jsonArray) {
-        this.content = jsonArray.toString();
+        this.content = getContentJson(jsonArray.toString());
         this.mediaType = HttpParams.MEDIA_TYPE_JSON;
         return (R) this;
     }
+
+    /**
+     * add public params to jsonrequest
+     * @param content
+     * @return
+     */
+    private String getContentJson(String content) {
+        if (params == null) return content;
+        String publicCommonParams = params.toJson();
+        if (publicCommonParams == null) return content;
+        if (content.length() > 0)
+            return publicCommonParams.substring(0, publicCommonParams.length()-1) +","+
+                   content.substring(1, content.length());
+        return content;
+    }
+
 
     /** 注意使用该方法上传字符串会清空实体中其他所有的参数，头信息不清除 */
     @SuppressWarnings("unchecked")

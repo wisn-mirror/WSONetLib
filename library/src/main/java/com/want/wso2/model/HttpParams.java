@@ -1,5 +1,7 @@
 package com.want.wso2.model;
 
+import android.util.Log;
+
 import com.want.wso2.utils.HttpUtils;
 
 import java.io.File;
@@ -250,6 +252,23 @@ public class HttpParams implements Serializable {
             if (result.length() > 0) result.append("&");
             result.append(entry.getKey()).append("=").append(entry.getValue());
         }
+        return result.toString();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String toJson(){
+        if(urlParamsMap.isEmpty())return null;
+        StringBuilder result = new StringBuilder();
+        result.append("{");
+        for (ConcurrentHashMap.Entry<String, List<String>> entry : urlParamsMap.entrySet()) {
+            if (result.length() > 1) result.append(",");
+            result.append("\""+entry.getKey()).append("\"=\"");
+            result.append(entry.getValue().get(0)+"\"");
+        }
+        result.append("}");
         return result.toString();
     }
 }

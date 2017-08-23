@@ -25,6 +25,12 @@ import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
+import com.want.wso2.model.HttpParams;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -311,9 +317,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                        });
                 WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
                         .tag("http://10.0.86.120:8080/WSS/app/test")
-                        .params("id",123432)
-                        .params("name","wisn")
-                        .params("password","nihao")
+                        .upObjectToJson(user)
+//                        .params("id",123432)
+//                        .params("name","wisn")
+//                        .params("password","nihao")
                         .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
 
                             @Override
@@ -327,6 +334,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                 updateView("onError:"+response.body(), true);
                             }
                         });
+//
+                /*LinkedHashMap<String, List<String>>
+                        urlParamsMap =
+                        WSONet.getInstance().getCommonParams().urlParamsMap;
+                Iterator<Map.Entry<String, List<String>>> iterator = urlParamsMap.entrySet().iterator();
+                while(iterator.hasNext()){
+                    Map.Entry<String, List<String>> next = iterator.next();
+                    updateView(next.getKey()+ next.getValue().size(),true);
+                }*/
                 /*WSONet.<UserTResponse2>post("http://10.0.86.120:8080/WSS/app/test")
                         .tag("http://10.0.86.120:8080/WSS/app/test")
                         .upJson(new Gson().toJson(user))

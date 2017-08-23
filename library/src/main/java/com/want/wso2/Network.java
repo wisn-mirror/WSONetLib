@@ -1,7 +1,8 @@
 package com.want.wso2;
 
+import android.text.TextUtils;
+
 import com.want.wso2.utils.DataUitls;
-import com.want.wso2.utils.EmptyUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -97,7 +98,7 @@ public class Network {
             public Response intercept(Chain chain) throws IOException {
                 // 设置 Cookie
                 String cookieStr = DataUitls.getCookieId();
-                if (EmptyUtils.isEmpty(cookieStr)) {
+                if (TextUtils.isEmpty(cookieStr)) {
                     return chain.proceed(chain.request().newBuilder().header("Cookie", cookieStr).build());
                 }
                 return chain.proceed(chain.request());

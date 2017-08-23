@@ -37,6 +37,8 @@ public interface HasBody<R> {
 
     R upString(String string, MediaType mediaType);
 
+    R upObjectToJson(Object obj);
+
     R upJson(String json);
 
     R upJson(JSONObject jsonObject);
