@@ -1,6 +1,6 @@
 package com.want.wso2.https;
 
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,7 +112,7 @@ public class HttpsUtils {
             kmf.init(clientKeyStore, password.toCharArray());
             return kmf.getKeyManagers();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return null;
     }
@@ -134,7 +134,7 @@ public class HttpsUtils {
                 try {
                     if (certStream != null) certStream.close();
                 } catch (IOException e) {
-                    OkLogger.printStackTrace(e);
+                    WSOLog.printStackTrace(e);
                 }
             }
             //我们创建一个默认类型的TrustManagerFactory
@@ -144,7 +144,7 @@ public class HttpsUtils {
             //通过tmf获取TrustManager数组，TrustManager也会信任keyStore中的证书
             return tmf.getTrustManagers();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return null;
     }

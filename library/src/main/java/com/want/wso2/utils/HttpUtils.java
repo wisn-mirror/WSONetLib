@@ -47,7 +47,7 @@ public class HttpUtils {
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
         } catch (UnsupportedEncodingException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return url;
     }
@@ -63,7 +63,7 @@ public class HttpUtils {
                 headerBuilder.add(entry.getKey(), entry.getValue());
             }
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         builder.headers(headerBuilder.build());
         return builder;
@@ -113,7 +113,7 @@ public class HttpUtils {
         try {
             fileName = URLDecoder.decode(fileName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return fileName;
     }
@@ -176,7 +176,7 @@ public class HttpUtils {
         if (!file.exists()) return true;
         if (file.isFile()) {
             boolean delete = file.delete();
-            OkLogger.e("deleteFile:" + delete + " path:" + path);
+            WSOLog.e("deleteFile:" + delete + " path:" + path);
             return delete;
         }
         return false;

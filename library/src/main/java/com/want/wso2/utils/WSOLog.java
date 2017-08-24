@@ -6,7 +6,7 @@ import android.util.Log;
  * Created by wisn on 2017/8/22.
  */
 
-public class OkLogger {
+public class WSOLog {
 
     private static boolean isLogEnable = true;
 

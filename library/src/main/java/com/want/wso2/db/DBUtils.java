@@ -3,7 +3,7 @@ package com.want.wso2.db;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 /**
  * Created by wisn on 2017/8/22.
@@ -57,7 +57,7 @@ public class DBUtils {
             }
             count = cursor.getInt(0);
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         } finally {
             if (cursor != null) cursor.close();
         }
@@ -72,7 +72,7 @@ public class DBUtils {
             cursor = db.rawQuery("SELECT * FROM " + tableName + " LIMIT 0", null);
             return cursor != null && cursor.getColumnIndex(fieldName) != -1;
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
             return false;
         } finally {
             if (cursor != null) {

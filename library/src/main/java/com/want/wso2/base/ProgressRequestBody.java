@@ -3,7 +3,7 @@ package com.want.wso2.base;
 import com.want.wso2.callback.Callback;
 import com.want.wso2.model.Progress;
 import com.want.wso2.utils.HttpUtils;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public class ProgressRequestBody<T> extends RequestBody {
         try {
             return requestBody.contentLength();
         } catch (IOException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
             return -1;
         }
     }

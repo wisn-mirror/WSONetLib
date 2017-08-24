@@ -10,7 +10,7 @@ import com.want.wso2.model.Progress;
 import com.want.wso2.model.Response;
 import com.want.wso2.task.PriorityRunnable;
 import com.want.wso2.utils.HttpUtils;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ public class UploadTask<T> implements Runnable {
             priorityRunnable = new PriorityRunnable(progress.priority, this);
             executor.execute(priorityRunnable);
         } else {
-            OkLogger.w("the task with tag " + progress.tag + " is already in the upload queue, current task status is " + progress.status);
+            WSOLog.w("the task with tag " + progress.tag + " is already in the upload queue, current task status is " + progress.status);
         }
         return this;
     }
@@ -126,7 +126,7 @@ public class UploadTask<T> implements Runnable {
             progress.speed = 0;
             progress.status = Progress.PAUSE;
         } else {
-            OkLogger.w("only the task with status WAITING(1) or LOADING(2) can pause, current status is " + progress.status);
+            WSOLog.w("only the task with status WAITING(1) or LOADING(2) can pause, current status is " + progress.status);
         }
     }
 

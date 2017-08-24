@@ -3,7 +3,7 @@ package com.want.wso2.cookie;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -118,7 +118,7 @@ public class SerializableCookie implements Serializable {
             ObjectOutputStream outputStream = new ObjectOutputStream(os);
             outputStream.writeObject(serializableCookie);
         } catch (IOException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
             return null;
         }
         return os.toByteArray();
@@ -142,7 +142,7 @@ public class SerializableCookie implements Serializable {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             cookie = ((SerializableCookie) objectInputStream.readObject()).getCookie();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return cookie;
     }

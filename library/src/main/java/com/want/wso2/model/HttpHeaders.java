@@ -4,7 +4,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import com.want.wso2.WSONet;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -112,7 +112,7 @@ public class HttpHeaders implements Serializable {
                 jsonObject.put(entry.getKey(), entry.getValue());
             }
         } catch (JSONException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return jsonObject.toString();
     }

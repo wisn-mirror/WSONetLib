@@ -40,7 +40,7 @@ public class IOUtils {
         try {
             closeable.close();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
     }
 
@@ -49,7 +49,7 @@ public class IOUtils {
         try {
             flushable.flush();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
     }
 
@@ -117,7 +117,7 @@ public class IOUtils {
             oos.flush();
             return baos.toByteArray();
         } catch (IOException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         } finally {
             IOUtils.closeQuietly(oos);
             IOUtils.closeQuietly(baos);
@@ -134,7 +134,7 @@ public class IOUtils {
             ois = new ObjectInputStream(bais);
             return ois.readObject();
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         } finally {
             IOUtils.closeQuietly(ois);
             IOUtils.closeQuietly(bais);
@@ -351,7 +351,7 @@ public class IOUtils {
         try {
             stat = new StatFs(path);
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
             return 0;
         }
         if (Build.VERSION.SDK_INT >= 18) return getStatFsSize(stat, "getBlockSizeLong", "getAvailableBlocksLong");
@@ -370,7 +370,7 @@ public class IOUtils {
             long availableBlocks = (Long) getAvailableBlocksMethod.invoke(statFs);
             return blockSize * availableBlocks;
         } catch (Throwable e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         return 0;
     }

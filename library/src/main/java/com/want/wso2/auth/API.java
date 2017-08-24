@@ -46,12 +46,4 @@ public interface API {
     @POST("api/device-mgt/android/v1.0/devices")
     Call<DeviceResponse> upDeviceInfo(@Header("Authorization") String authorization, @Body RequestBody requestBody);
 
-    @Headers({"User-Agent:Mozilla/5.0 ( compatible ), Android","Content-Type:application/json", "Accept:application/json"})
-    @POST()
-    Call<ResponseBody> executePost(@Url String url, @Body RequestBody requestBody);
-
-    @Headers({"User-Agent:Mozilla/5.0 ( compatible ), Android","Content-Type:application/json", "Accept:application/json"})
-    @GET()
-    Call<ResponseBody> executePost(@Url String url, @Header("Authorization") String authorization);
-
 }

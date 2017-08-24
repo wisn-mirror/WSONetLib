@@ -1,16 +1,24 @@
 package com.want.wso2.auth;
 
+import com.want.wso2.WSONet;
 import com.want.wso2.bean.Token;
+import com.want.wso2.utils.TokenUtils;
+import com.want.wso2.utils.WSOLog;
+
 import android.content.Context;
+import android.provider.SyncStateContract;
+import android.util.Log;
 
 /**
  * Created by wisn on 2017/8/21.
  */
 
-public class IdentityProxy {
+public class IdentityProxy implements TokenCallBack{
+    private static final String  TAG = "IdentityProxy";
     private static Token token = null;
     private static IdentityProxy identityProxy = new IdentityProxy();
     private Context context;
+    private APIAccessCallBack apiAccessCallBack;
 
     private IdentityProxy() {}
 
@@ -18,47 +26,50 @@ public class IdentityProxy {
         return identityProxy;
     }
 
-    private void validateStoredToken() {/*
-        SharedPreferences mainPref = context.getSharedPreferences(Constants.APPLICATION_PACKAGE,
-                                                                  Context.MODE_PRIVATE);
-        String refreshToken = mainPref.getString(Constants.REFRESH_TOKEN, null).toString();
-        String accessToken = mainPref.getString(Constants.ACCESS_TOKEN, null).toString();
-        String date = mainPref.getString(Constants.DATE_LABEL, null).toString();
-        String endPoint = mainPref.getString(Constants.TOKEN_ENDPOINT, null).toString();
-        setAccessTokenURL(endPoint);
-
-        if (!refreshToken.isEmpty()) {
-            if (Constants.DEBUG_ENABLED) {
-                Log.d(TAG, "refreshToken is not empty.");
+    public void checkToken(APIAccessCallBack apiAccessCallBack){
+        this.apiAccessCallBack=apiAccessCallBack;
+        if(token==null){
+            TokenStore TokenStore=new TokenStore(WSONet.getInstance().getContext());
+            this.token=TokenStore.getToken();
+            if(this.token==null){
+                this.apiAccessCallBack.onAPIAccessReceive("token is null",null);
+            }else{
+                validateStoredToken();
             }
-            token = new Token();
-            token.setDate(date);
-            token.setRefreshToken(refreshToken);
-            token.setAccessToken(accessToken);
-            boolean isExpired = ServerUtilities.isValid(token.getDate());
+        }else{
+            validateStoredToken();
+        }
+    }
+    private void validateStoredToken() {
+            boolean isExpired = TokenUtils.isValid(token.getDate());
             if (!isExpired) {
-                if (Constants.DEBUG_ENABLED) {
-                    Log.d(TAG, "stored token is not expired.");
-                }
+                WSOLog.d(TAG, "stored token is not expired.");
                 synchronized (this) {
-                    IdentityProxyBackup.getInstance().receiveNewAccessToken(Constants.REQUEST_SUCCESSFUL,
-                                                                            Constants.SUCCESS_RESPONSE,
-                                                                            token);
+                    this.apiAccessCallBack.onAPIAccessReceive("success",token);
                 }
             } else {
-                if (Constants.DEBUG_ENABLED) {
                     Log.d(TAG, "stored token is expired, refreshing");
-                }
                 refreshToken();
             }
-        } else {
-            if (Constants.DEBUG_ENABLED) {
-                Log.d(TAG, "refreshToken is empty.");
-            }
-            synchronized (this) {
-                IdentityProxyBackup.getInstance().receiveNewAccessToken(Constants.ACCESS_FAILURE,
-                                                                        Constants.FAILURE_RESPONSE, token);
-            }
-        }*/
+    }
+    private void refreshToken() {
+        TokenStore TokenStore=new TokenStore(WSONet.getInstance().getContext());
+        Authenticator Authenticator=new Authenticator();
+        Authenticator.refreshToken(TokenStore.getTokenUrl(),TokenStore.getClientId(),TokenStore.getSecrect(),token);
+    }
+    @Override
+    public void receiveAccessToken(int code, String message, Token token) {
+        if(code==200){
+            IdentityProxy.token=token;
+            this.apiAccessCallBack.onAPIAccessReceive("success",token);
+        }
+    }
+
+    @Override
+    public void receiveNewAccessToken(int  code, String message, Token token) {
+        if(code==200){
+            IdentityProxy.token=token;
+            this.apiAccessCallBack.onAPIAccessReceive("success",token);
+        }
     }
 }

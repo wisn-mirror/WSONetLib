@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class TokenUtils {
     private final static String TAG = "TokenUtils";
-    private static final DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss",
+    public  static final DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss",
                                                                       Locale.getDefault());
     /**
      * Validate the token expiration date.

@@ -1,7 +1,7 @@
 package com.want.wso2.interceptor;
 
 import com.want.wso2.utils.IOUtils;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -122,7 +122,7 @@ public class HttpLoggingInterceptor implements Interceptor {
                 }
             }
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         } finally {
             log("--> END " + request.method());
         }
@@ -159,7 +159,7 @@ public class HttpLoggingInterceptor implements Interceptor {
                 }
             }
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         } finally {
             log("<-- END HTTP");
         }
@@ -200,7 +200,7 @@ public class HttpLoggingInterceptor implements Interceptor {
             Charset charset = getCharset(body.contentType());
             log("\tbody:" + buffer.readString(charset));
         } catch (Exception e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
     }
 }

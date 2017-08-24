@@ -9,7 +9,7 @@ import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpParams;
 import com.want.wso2.utils.HttpUtils;
 import com.want.wso2.utils.JsonConvertor;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -218,7 +218,7 @@ public abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R
         try {
             headers(HttpHeaders.HEAD_KEY_CONTENT_LENGTH, String.valueOf(requestBody.contentLength()));
         } catch (IOException e) {
-            OkLogger.printStackTrace(e);
+            WSOLog.printStackTrace(e);
         }
         okhttp3.Request.Builder requestBuilder = new okhttp3.Request.Builder();
         return HttpUtils.appendHeaders(requestBuilder, headers);

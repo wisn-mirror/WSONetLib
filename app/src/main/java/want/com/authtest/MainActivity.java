@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.want.wso2.auth.APIController;
-import com.want.wso2.Constant;
+import com.want.wso2.utils.Constant;
 import com.want.wso2.WSONet;
 import com.want.wso2.bean.DeviceRequest;
 import com.want.wso2.bean.DeviceResponse;

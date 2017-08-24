@@ -6,7 +6,7 @@ import com.want.wso2.model.Progress;
 import com.want.wso2.task.XExecutor;
 import com.want.wso2.upload.UploadTask;
 import com.want.wso2.upload.UploadThreadPool;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,7 +88,7 @@ public class Upload {
         for (Map.Entry<String, UploadTask<?>> entry : taskMap.entrySet()) {
             UploadTask<?> task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             task.start();
@@ -101,7 +101,7 @@ public class Upload {
         for (Map.Entry<String, UploadTask<?>> entry : taskMap.entrySet()) {
             UploadTask<?> task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status != Progress.LOADING) {
@@ -112,7 +112,7 @@ public class Upload {
         for (Map.Entry<String, UploadTask<?>> entry : taskMap.entrySet()) {
             UploadTask<?> task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status == Progress.LOADING) {
@@ -128,7 +128,7 @@ public class Upload {
         for (Map.Entry<String, UploadTask<?>> entry : map.entrySet()) {
             UploadTask<?> task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status != Progress.LOADING) {
@@ -139,7 +139,7 @@ public class Upload {
         for (Map.Entry<String, UploadTask<?>> entry : map.entrySet()) {
             UploadTask<?> task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status == Progress.LOADING) {

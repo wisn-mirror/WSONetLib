@@ -7,7 +7,7 @@ import com.want.wso2.db.DownloadManager;
 import com.want.wso2.model.Progress;
 import com.want.wso2.task.XExecutor;
 import com.want.wso2.utils.IOUtils;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class Download {
         for (Map.Entry<String, DownloadTask> entry : taskMap.entrySet()) {
             DownloadTask task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             task.start();
@@ -104,7 +104,7 @@ public class Download {
         for (Map.Entry<String, DownloadTask> entry : taskMap.entrySet()) {
             DownloadTask task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status != Progress.LOADING) {
@@ -115,7 +115,7 @@ public class Download {
         for (Map.Entry<String, DownloadTask> entry : taskMap.entrySet()) {
             DownloadTask task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status == Progress.LOADING) {
@@ -140,7 +140,7 @@ public class Download {
         for (Map.Entry<String, DownloadTask> entry : map.entrySet()) {
             DownloadTask task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status != Progress.LOADING) {
@@ -151,7 +151,7 @@ public class Download {
         for (Map.Entry<String, DownloadTask> entry : map.entrySet()) {
             DownloadTask task = entry.getValue();
             if (task == null) {
-                OkLogger.w("can't find task with tag = " + entry.getKey());
+                WSOLog.w("can't find task with tag = " + entry.getKey());
                 continue;
             }
             if (task.progress.status == Progress.LOADING) {

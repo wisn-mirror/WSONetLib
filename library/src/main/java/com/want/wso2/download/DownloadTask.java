@@ -13,7 +13,7 @@ import com.want.wso2.model.Progress;
 import com.want.wso2.task.PriorityRunnable;
 import com.want.wso2.utils.HttpUtils;
 import com.want.wso2.utils.IOUtils;
-import com.want.wso2.utils.OkLogger;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -66,7 +66,7 @@ public class DownloadTask implements Runnable {
         if (folder != null && !TextUtils.isEmpty(folder.trim())) {
             progress.folder = folder;
         } else {
-            OkLogger.w("folder is null, ignored!");
+            WSOLog.w("folder is null, ignored!");
         }
         return this;
     }
@@ -75,7 +75,7 @@ public class DownloadTask implements Runnable {
         if (fileName != null && !TextUtils.isEmpty(fileName.trim())) {
             progress.fileName = fileName;
         } else {
-            OkLogger.w("fileName is null, ignored!");
+            WSOLog.w("fileName is null, ignored!");
         }
         return this;
     }
@@ -146,7 +146,7 @@ public class DownloadTask implements Runnable {
                 }
             }
         } else {
-            OkLogger.w("the task with tag " + progress.tag + " is already in the download queue, current task status is " + progress.status);
+            WSOLog.w("the task with tag " + progress.tag + " is already in the download queue, current task status is " + progress.status);
         }
     }
 
@@ -170,7 +170,7 @@ public class DownloadTask implements Runnable {
             progress.speed = 0;
             progress.status = Progress.PAUSE;
         } else {
-            OkLogger.w("only the task with status WAITING(1) or LOADING(2) can pause, current status is " + progress.status);
+            WSOLog.w("only the task with status WAITING(1) or LOADING(2) can pause, current status is " + progress.status);
         }
     }
 

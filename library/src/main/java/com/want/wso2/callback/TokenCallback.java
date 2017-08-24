@@ -15,32 +15,25 @@ import okhttp3.Response;
  * Created by wisn on 2017/8/22.
  */
 
-public abstract class JsonCallback<T> extends AbsCallback<T> {
+public abstract class TokenCallback<T> extends AbsCallback<T> {
 
     private Type type;
     private Class<T> clazz;
 
-    public JsonCallback() {
+    public TokenCallback() {
     }
 
-    public JsonCallback(Type type) {
+    public TokenCallback(Type type) {
         this.type = type;
     }
 
-    public JsonCallback(Class<T> clazz) {
+    public TokenCallback(Class<T> clazz) {
         this.clazz = clazz;
     }
 
     @Override
     public void onStart(final Request<T, ? extends Request> request) {
         super.onStart(request);
-        IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
-            @Override
-            public void onAPIAccessReceive(String status, Token token) {
-                request.headers("Authorization", "Bearer "+token.getAccessToken());
-            }
-        });
-
     }
 
     @Override
