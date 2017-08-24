@@ -24,7 +24,7 @@ public class SimpleResponse implements Serializable {
     public int code;
     public String msg;
 
-    public BaseNetBean toLzyResponse() {
+    public BaseNetBean toResponse() {
         BaseNetBean baseNetBean = new BaseNetBean();
         baseNetBean.code = code;
         baseNetBean.msg = msg;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,6 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.want.wso2.auth.APIController;
+import com.want.wso2.db.DownloadManager;
+import com.want.wso2.download.Download;
+import com.want.wso2.download.DownloadListener;
+import com.want.wso2.model.Progress;
+import com.want.wso2.request.GetRequest;
 import com.want.wso2.utils.Constant;
 import com.want.wso2.WSONet;
 import com.want.wso2.bean.DeviceRequest;
@@ -25,6 +31,9 @@ import com.want.wso2.bean.TokenRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.request.PostRequest;
+
+import java.io.File;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -291,6 +300,40 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } else if (view == mUsers) {
             UserT user = new UserT(43241231, "wisn");
             try {
+                Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+                Download.getInstance().getThreadPool().setCorePoolSize(3);
+                List<Progress> progressList = DownloadManager.getInstance().getAll();
+                Download.restore(progressList);
+                GetRequest<File> request = WSONet.<File>get("http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk").headers("aaa", "111").params("bbb", "222");
+                Download.request("Tag", request)
+                        .save()//
+                        .register(new DownloadListener("Tag") {
+                            @Override
+                            public void onStart(Progress progress) {
+                                Log.d(TAG,"onStart  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            }
+
+                            @Override
+                            public void onProgress(Progress progress) {
+                                Log.d(TAG,"onProgress  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            }
+
+                            @Override
+                            public void onError(Progress progress) {
+                                Log.d(TAG,"onError  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            }
+
+                            @Override
+                            public void onFinish(File file, Progress progress) {
+                                Log.d(TAG,"onFinish  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            }
+
+                            @Override
+                            public void onRemove(Progress progress) {
+                                Log.d(TAG,"onRemove  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            }
+                        })
+                        .start();
 //                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
 //                        .tag("http://10.0.86.120:8080/WSS/app/test")
 //                        .upJson(new Gson().toJson(user))
@@ -326,37 +369,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                                updateView("onError:"+response.body(), true);
 //                            }
 //                        });
-                final PostRequest<String>
-                        stringPostRequest =
-                        WSONet.<String>post("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
-                                .tag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
-                                .upJson("{\"machineids\":11}");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while(true){
-                            SystemClock.sleep(100);
-                            stringPostRequest.execute(new JsonCallback<String>(){
-
-                                @Override
-                                public void onSuccess(com.want.wso2.model.Response<String> response) {
-                                    updateView("onResponse:"+response.body(), true);
-
-                                }
-
-                                @Override
-                                public void onError(com.want.wso2.model.Response<String> response) {
-                                    super.onError(response);
-                                    updateView("onError:"+response.body(), true);
-
-                                }
-                            });
-                            WSONet.getInstance().cancelTag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail");
-
-                        }
-
-                    }
-                }).start();
+//                final PostRequest<String>
+//                        stringPostRequest =
+//                        WSONet.<String>post("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
+//                                .tag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail")
+//                                .upJson("{\"machineids\":11}");
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        while(true){
+//                            SystemClock.sleep(100);
+//                            stringPostRequest.execute(new JsonCallback<String>(){
+//
+//                                @Override
+//                                public void onSuccess(com.want.wso2.model.Response<String> response) {
+//                                    updateView("onResponse:"+response.body(), true);
+//
+//                                }
+//
+//                                @Override
+//                                public void onError(com.want.wso2.model.Response<String> response) {
+//                                    super.onError(response);
+//                                    updateView("onError:"+response.body(), true);
+//
+//                                }
+//                            });
+//                            WSONet.getInstance().cancelTag("http://10.0.35.10:9763/yunwang_backend/services/monitor/detail");
+//
+//                        }
+//
+//                    }
+//                }).start();
 
 //
                 /*LinkedHashMap<String, List<String>>
@@ -459,6 +502,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 e.printStackTrace();
             }*/
         }
+
     }
 
     public void toast(final String message) {

@@ -3,7 +3,6 @@ package com.want.wso2.convert;
 import com.google.gson.stream.JsonReader;
 import com.want.wso2.bean.BaseNetBean;
 import com.want.wso2.bean.SimpleResponse;
-import com.want.wso2.convert.Converter;
 import com.want.wso2.utils.Convert;
 
 import org.json.JSONArray;
@@ -82,8 +81,6 @@ public class JsonConvert<T> implements Converter<T> {
         ResponseBody body = response.body();
         if (body == null) return null;
         JsonReader jsonReader = new JsonReader(body.charStream());
-
-        // 泛型格式如下： new JsonCallback<任意JavaBean>(this)
         T t = Convert.fromJson(jsonReader, type);
         response.close();
         return t;
@@ -94,21 +91,17 @@ public class JsonConvert<T> implements Converter<T> {
         ResponseBody body = response.body();
         if (body == null) return null;
         JsonReader jsonReader = new JsonReader(body.charStream());
-
         Type rawType = type.getRawType();                     // 泛型的实际类型
         Type typeArgument = type.getActualTypeArguments()[0]; // 泛型的参数
         if (rawType != BaseNetBean.class) {
-            // 泛型格式如下： new JsonCallback<外层BaseBean<内层JavaBean>>(this)
             T t = Convert.fromJson(jsonReader, type);
             response.close();
             return t;
         } else {
             if (typeArgument == Void.class) {
-                // 泛型格式如下： new JsonCallback<LzyResponse<Void>>(this)
                 SimpleResponse simpleResponse = Convert.fromJson(jsonReader, SimpleResponse.class);
                 response.close();
-                //noinspection unchecked
-                return (T) simpleResponse.toLzyResponse();
+                return (T) simpleResponse.toResponse();
             } else {
                 // 泛型格式如下： new JsonCallback<LzyResponse<内层JavaBean>>(this)
                 BaseNetBean baseNetBean = Convert.fromJson(jsonReader, type);
