@@ -1,6 +1,7 @@
 token sdk
 初始化在Application中：
-  HttpHeaders headers = new HttpHeaders();
+
+        HttpHeaders headers = new HttpHeaders();
         headers.put("commonHeaderKey2", "commonHeaderValue2");
         HttpParams params = new HttpParams();
         params.put("commonParamsKey1", "commonParamsValue1");
@@ -17,18 +18,18 @@ token sdk
 
 注册：
 
-    /**
-     *
-     *
-     * @param registerUrl
-     * @param tokenUrl
-     * @param registrationProfileRequest
-     * @param userName
-     * @param password
-     * @param scope
-     * @param registerListener
-     */
- Authenticator.register(String registerUrl,
+            /**
+             *
+             *
+             * @param registerUrl
+             * @param tokenUrl
+             * @param registrationProfileRequest
+             * @param userName
+             * @param password
+             * @param scope
+             * @param registerListener
+             */
+        Authenticator.register(String registerUrl,
                                 final String tokenUrl,
                                 RegistrationProfileRequest registrationProfileRequest,
                                 final String userName,
@@ -37,7 +38,8 @@ token sdk
                                 final RegisterListener registerListener)
 
   请求：
-       WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
+
+                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
                                                    .tag("tag")
                                                    .upObjectToJson(user)
                                                    .params("id",123432)
@@ -54,7 +56,8 @@ token sdk
                                                        }
                                                    });
 //设置下载目录
-Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+
+            Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
                 Download.getInstance().getThreadPool().setCorePoolSize(3);
                 List<Progress> progressList = DownloadManager.getInstance().getAll();
                 Download.restore(progressList);
