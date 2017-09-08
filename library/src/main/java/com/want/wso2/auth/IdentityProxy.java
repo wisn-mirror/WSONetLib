@@ -61,6 +61,7 @@ public class IdentityProxy implements TokenCallBack{
     public void receiveAccessToken(int code, String message, Token token) {
         if(code==200){
             IdentityProxy.token=token;
+            if(this.apiAccessCallBack!=null)
             this.apiAccessCallBack.onAPIAccessReceive("success",token);
         }
     }
@@ -69,7 +70,8 @@ public class IdentityProxy implements TokenCallBack{
     public void receiveNewAccessToken(int  code, String message, Token token) {
         if(code==200){
             IdentityProxy.token=token;
-            this.apiAccessCallBack.onAPIAccessReceive("success",token);
+            if(this.apiAccessCallBack!=null)
+                this.apiAccessCallBack.onAPIAccessReceive("success",token);
         }
     }
 }

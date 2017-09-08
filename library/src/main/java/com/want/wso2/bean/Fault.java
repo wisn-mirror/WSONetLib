@@ -5,4 +5,16 @@ package com.want.wso2.bean;
  */
 
 public class Fault {
+    public int code;
+    public String message;
+    public String description;
+
+    @Override
+    public String toString() {
+        return "Fault{" +
+               "code=" + code +
+               ", message='" + message + '\'' +
+               ", description='" + description + '\'' +
+               '}';
+    }
 }

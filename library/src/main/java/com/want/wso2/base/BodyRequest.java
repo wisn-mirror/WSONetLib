@@ -5,10 +5,14 @@ package com.want.wso2.base;
  */
 
 import android.text.TextUtils;
+import android.util.Log;
+
+import com.google.gson.Gson;
 import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpParams;
 import com.want.wso2.utils.HttpUtils;
 import com.want.wso2.utils.JsonConvertor;
+import com.want.wso2.utils.JsonTool;
 import com.want.wso2.utils.WSOLog;
 
 import org.json.JSONArray;
@@ -128,7 +132,8 @@ public abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R
     @SuppressWarnings("unchecked")
     @Override
     public R upObjectToJson(Object object) {
-        this.content = getContentJson(JsonConvertor.getInstance().toJson(object));
+        this.content = getContentJson(JsonTool.toJson(object));
+        Log.e("content","content:"+content);
         this.mediaType = HttpParams.MEDIA_TYPE_JSON;
         return (R) this;
     }

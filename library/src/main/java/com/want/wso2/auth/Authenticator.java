@@ -1,5 +1,6 @@
 package com.want.wso2.auth;
 
+import com.google.gson.Gson;
 import com.want.wso2.WSONet;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
@@ -11,6 +12,8 @@ import com.want.wso2.model.Response;
 import com.want.wso2.utils.TokenUtils;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -51,6 +54,8 @@ public class Authenticator {
         String basicAuthValue = "Basic " + base64(userName, password);
         WSONet.<RegisterResponse>post(registerUrl)
                 .upObjectToJson(registrationProfileRequest)
+//                .upJson(registrationProfileRequest.toJSON())
+//                .upJson("{\"applicationName\":\"cdmf_android_867516026498122\",\"consumerKey\":null,\"consumerSecret\":null,\"tags\":[\"android\"],\"isAllowedToAllDomains\":false,\"isMappingAnExistingOAuthApp\":false,\"allowedToAllDomains\":false,\"mappingAnExistingOAuthApp\":false}")
                 .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
                 .headers("Content-Type", "application/json")
                 .headers("Accept", "application/json")

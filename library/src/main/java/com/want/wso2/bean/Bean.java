@@ -7,7 +7,15 @@ import com.want.wso2.utils.JsonTool;
  */
 
 public class Bean {
+    public Fault fault;
     public String toJSON(){
         return JsonTool.toJson(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Bean{" +
+               "fault=" + fault +
+               '}';
     }
 }

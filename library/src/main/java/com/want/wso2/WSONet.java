@@ -75,11 +75,11 @@ public class WSONet {
 
     private void addPublicData() {
         HttpHeaders headers = new HttpHeaders();
-        headers.put("imei", DeviceUtils.getDeviceId(this.getContext()));
-        headers.put("appname", DeviceUtils.getAppName(this.getContext()));
+       /* headers.put("imei", DeviceUtils.getDeviceId(this.getContext()));
+        headers.put("appname", DeviceUtils.getAppName(this.getContext()));*/
         HttpParams params = new HttpParams();
-        params.put("app_version", DeviceUtils.getAppVersion(this.getContext()));
-        params.put("app_code", DeviceUtils.getAppCode(this.getContext()));
+        /*params.put("app_version", DeviceUtils.getAppVersion(this.getContext()));
+        params.put("app_code", DeviceUtils.getAppCode(this.getContext()));*/
         addCommonParams(params);
         addCommonHeaders(headers);
     }

@@ -10,11 +10,7 @@ import java.lang.reflect.Type;
  */
 
 public class JsonTool {
-    private static  Gson gson=new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-//            .registerTypeAdapterFactory(StaticTypeAdapterFactory.getStaticTypeAdapterFactory())
-            // .excludeFieldsWithModifiers(STATIC)  //STATIC|TRANSIENT in the default configuration
-            .create();
+    private static  Gson gson=new Gson();
     public static Gson getInstance(){
         return gson;
     }

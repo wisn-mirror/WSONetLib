@@ -10,6 +10,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import okhttp3.Response;
+import retrofit2.http.GET;
+import retrofit2.http.Headers;
 
 /**
  * Created by wisn on 2017/8/22.
@@ -38,6 +40,9 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
             @Override
             public void onAPIAccessReceive(String status, Token token) {
                 request.headers("Authorization", "Bearer "+token.getAccessToken());
+                request.headers("User-Agent", "Mozilla/5.0 ( compatible ), Android");
+                request.headers("Accept", "application/json");
+                request.headers("Content-Type", "application/json");
             }
         });
 

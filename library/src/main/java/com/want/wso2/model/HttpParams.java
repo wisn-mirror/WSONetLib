@@ -265,7 +265,7 @@ public class HttpParams implements Serializable {
         result.append("{");
         for (ConcurrentHashMap.Entry<String, List<String>> entry : urlParamsMap.entrySet()) {
             if (result.length() > 1) result.append(",");
-            result.append("\""+entry.getKey()).append("\"=\"");
+            result.append("\""+entry.getKey()).append("\":\"");
             result.append(entry.getValue().get(0)+"\"");
         }
         result.append("}");

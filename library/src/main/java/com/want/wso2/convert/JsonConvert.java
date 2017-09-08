@@ -2,6 +2,7 @@ package com.want.wso2.convert;
 
 import com.google.gson.stream.JsonReader;
 import com.want.wso2.bean.BaseNetBean;
+import com.want.wso2.bean.Fault;
 import com.want.wso2.bean.SimpleResponse;
 import com.want.wso2.utils.Convert;
 
@@ -59,7 +60,6 @@ public class JsonConvert<T> implements Converter<T> {
         ResponseBody body = response.body();
         if (body == null) return null;
         JsonReader jsonReader = new JsonReader(body.charStream());
-
         if (rawType == String.class) {
             //noinspection unchecked
             return (T) body.string();

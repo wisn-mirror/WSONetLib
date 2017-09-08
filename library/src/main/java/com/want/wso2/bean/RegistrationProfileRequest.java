@@ -26,9 +26,11 @@ public class RegistrationProfileRequest extends Bean{
     public String applicationName;
     public String tags[];
     public boolean isAllowedToAllDomains;
-    public String consumerKey;
-    public String consumerSecret;
+    public String consumerKey=null;
+    public String consumerSecret=null;
     public boolean isMappingAnExistingOAuthApp;
+    public boolean mappingAnExistingOAuthApp;
+    public boolean allowedToAllDomains;
 
     public String getApplicationName() {
         return applicationName;
@@ -76,6 +78,14 @@ public class RegistrationProfileRequest extends Bean{
 
     public void setConsumerSecret(String consumerSecret) {
         this.consumerSecret = consumerSecret;
+    }
+
+    public void setAllowedToAllDomains(boolean allowedToAllDomains) {
+        isAllowedToAllDomains = allowedToAllDomains;
+    }
+
+    public void setMappingAnExistingOAuthApp(boolean mappingAnExistingOAuthApp) {
+        isMappingAnExistingOAuthApp = mappingAnExistingOAuthApp;
     }
 
     @Override

@@ -127,6 +127,7 @@
                         android:background="#d1fa05"
                         android:gravity="center"
                         android:text="token"
+                        android:visibility="gone"
                         android:textColor="#fff"
                         android:textSize="16dp" />
                     <TextView
@@ -138,6 +139,7 @@
                         android:background="#05fa67"
                         android:gravity="center"
                         android:text="refreToken"
+                        android:visibility="gone"
                         android:textColor="#fff"
                         android:textSize="16dp" />
                     <TextView
@@ -190,6 +192,7 @@
                         android:background="#19ec9f"
                         android:gravity="center"
                         android:text="Users"
+                        android:visibility="gone"
                         android:textColor="#fff"
                         android:textSize="16dp" />
 
