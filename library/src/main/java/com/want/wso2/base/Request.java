@@ -5,6 +5,7 @@ package com.want.wso2.base;
  */
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.AdapterParam;
@@ -375,17 +376,20 @@ public abstract class Request<T, R extends Request> implements Serializable {
         this.callback = callback;
         final Call<T> call = adapt();
         if(userToken){
+            Log.e("execute","userToken");
             IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
                 @Override
                 public void onAPIAccessReceive(String status, Token token) {
-                    if(token==null){
-                        call.execute(callback);
-                    }else{
+                    if(token!=null){
                         headers.put("Authorization", "Bearer "+token.getAccessToken());
+                    }
+                    if (call != null && callback != null) {
+                        call.execute(callback);
                     }
                 }
             },call,callback);
         }else{
+            Log.e("execute","userTokenfalse");
             call.execute(callback);
         }
     }

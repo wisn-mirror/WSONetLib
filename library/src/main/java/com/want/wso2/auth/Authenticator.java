@@ -155,9 +155,9 @@ public class Authenticator {
                         @Override
                         public void onSuccess(Response<TokenResponse> response) {
                             tokenResponse(response, false);
-                            if (call != null && callback != null) {
+                           /* if (call != null && callback != null) {
                                 call.execute(callback);
-                            }
+                            }*/
                         }
 
                         @Override

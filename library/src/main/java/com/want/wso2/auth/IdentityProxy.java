@@ -48,7 +48,7 @@ public class IdentityProxy implements TokenCallBack {
 
     private void validateStoredToken(Call call, Callback callback) {
         boolean isExpired = TokenUtils.isValid(token.getDate());
-        if (isExpired) {
+        if (!isExpired) {
             WSOLog.d(TAG, "stored token is not expired.");
             synchronized (this) {
                 this.apiAccessCallBack.onAPIAccessReceive("success", token);
