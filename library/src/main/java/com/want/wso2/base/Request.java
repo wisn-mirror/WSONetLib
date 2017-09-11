@@ -11,6 +11,9 @@ import com.want.wso2.adapter.AdapterParam;
 import com.want.wso2.adapter.CacheCall;
 import com.want.wso2.adapter.Call;
 import com.want.wso2.adapter.CallAdapter;
+import com.want.wso2.auth.APIAccessCallBack;
+import com.want.wso2.auth.IdentityProxy;
+import com.want.wso2.bean.Token;
 import com.want.wso2.cache.CacheEntity;
 import com.want.wso2.cache.CacheMode;
 import com.want.wso2.cache.policy.CachePolicy;
@@ -363,10 +366,27 @@ public abstract class Request<T, R extends Request> implements Serializable {
 
     /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
     public void execute(Callback<T> callback) {
-        HttpUtils.checkNotNull(callback, "callback == null");
+        execute(callback,true);
+    }
 
+    /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
+    public void execute(final Callback<T> callback, boolean userToken) {
+        HttpUtils.checkNotNull(callback, "callback == null");
         this.callback = callback;
-        Call<T> call = adapt();
-        call.execute(callback);
+        final Call<T> call = adapt();
+        if(userToken){
+            IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
+                @Override
+                public void onAPIAccessReceive(String status, Token token) {
+                    if(token==null){
+                        call.execute(callback);
+                    }else{
+                        headers.put("Authorization", "Bearer "+token.getAccessToken());
+                    }
+                }
+            },call,callback);
+        }else{
+            call.execute(callback);
+        }
     }
 }

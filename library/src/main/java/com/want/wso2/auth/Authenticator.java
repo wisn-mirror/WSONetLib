@@ -1,10 +1,15 @@
 package com.want.wso2.auth;
 
+import android.util.Log;
+
 import com.want.wso2.WSONet;
+import com.want.wso2.adapter.Call;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.Token;
 import com.want.wso2.bean.TokenResponse;
+import com.want.wso2.callback.Callback;
+import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
@@ -85,7 +90,7 @@ public class Authenticator {
                         super.onError(response);
                         registerListener.onFailure("register error", response.code());
                     }
-                });
+                }, false);
     }
 
     /**
@@ -126,36 +131,45 @@ public class Authenticator {
                         super.onError(response);
                         IdentityProxy.getInstance().receiveAccessToken(500, "error", null);
                     }
-                });
-
+                }, false);
     }
 
-    public void refreshToken(String url, String clientID, String clientSecret, Token token) {
+    public void refreshToken(final Call call,
+                             final Callback callback,
+                             String url,
+                             String clientID,
+                             String clientSecret,
+                             Token token) {
+        try {
+            String basicAuthValue = "Basic " + base64(clientID, clientSecret);
+            String
+                    tokenUrl =
+                    url +
+                    "?refresh_token=" +
+                    token.getRefreshToken() +
+                    "&grant_type=refresh_token&scope=PRODUCTION";
+            WSONet.<TokenResponse>post(tokenUrl)
+                    .headers("Content-Type", "application/x-www-form-urlencoded")
+                    .headers("Authorization", basicAuthValue)
+                    .execute(new TokenCallback<TokenResponse>() {
+                        @Override
+                        public void onSuccess(Response<TokenResponse> response) {
+                            tokenResponse(response, false);
+                            if (call != null && callback != null) {
+                                call.execute(callback);
+                            }
+                        }
 
-        String basicAuthValue = "Basic " + base64(clientID, clientSecret);
-        String
-                tokenUrl =
-                url +
-                "?refresh_token=" +
-                token.getRefreshToken() +
-                "&grant_type=refresh_token&scope=PRODUCTION";
-        WSONet.<TokenResponse>post(tokenUrl)
-                .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
-                .headers("Content-Type", "application/x-www-form-urlencoded")
-                .headers("Accept", "application/json")
-                .headers("Authorization", basicAuthValue)
-                .execute(new TokenCallback<TokenResponse>() {
-                    @Override
-                    public void onSuccess(Response<TokenResponse> response) {
-                        tokenResponse(response, false);
-                    }
+                        @Override
+                        public void onError(Response<TokenResponse> response) {
+                            super.onError(response);
+                            IdentityProxy.getInstance().receiveAccessToken(500, "error", null);
+                        }
+                    }, false);
+        } catch (Exception e) {
+            e.printStackTrace();
 
-                    @Override
-                    public void onError(Response<TokenResponse> response) {
-                        super.onError(response);
-                        IdentityProxy.getInstance().receiveAccessToken(500, "error", null);
-                    }
-                });
+        }
     }
 
 
@@ -164,7 +178,7 @@ public class Authenticator {
      */
     public void tokenResponse(Response<TokenResponse> response, boolean isRefresh) {
         TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-        if (response.isSuccessful()) {
+        if (response.isSuccessful() && response.code() == 200) {
             TokenResponse body = response.body();
             Token token = new Token();
             String
@@ -176,6 +190,7 @@ public class Authenticator {
             token.setAccessToken(body.getAccess_token());
             token.setExpired(false);
             tokenStore.saveToken(token);
+            Log.e("tokenResponse", token.toString());
             if (isRefresh) {
                 IdentityProxy.getInstance().receiveAccessToken(200, "success", token);
             } else {

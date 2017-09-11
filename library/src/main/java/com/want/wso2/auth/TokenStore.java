@@ -2,6 +2,7 @@ package com.want.wso2.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.want.wso2.bean.Token;
 import com.want.wso2.utils.Constant;
@@ -30,12 +31,18 @@ public class TokenStore {
         String Token_Accesstoken = mSharedPreferences.getString(Constant.Token_Accesstoken, "");
         String Token_refreshtoken = mSharedPreferences.getString(Constant.Token_refreshtoken, "");
         String Token_date = mSharedPreferences.getString(Constant.Token_date, "");
-        Token token = new Token();
-        token.setDate(Token_date);
-        token.setRefreshToken(Token_refreshtoken);
-        token.setAccessToken(Token_Accesstoken);
-        token.setExpired(false);
-        return token;
+        if(!TextUtils.isEmpty(Token_Accesstoken)
+           &&!TextUtils.isEmpty(Token_refreshtoken)
+           &&!TextUtils.isEmpty(Token_date)){
+            Token token = new Token();
+            token.setDate(Token_date);
+            token.setRefreshToken(Token_refreshtoken);
+            token.setAccessToken(Token_Accesstoken);
+            token.setExpired(false);
+            return token;
+        }else{
+            return null;
+        }
     }
 
     public void saveIdSecrect(String clientId, String clientSecrect) {

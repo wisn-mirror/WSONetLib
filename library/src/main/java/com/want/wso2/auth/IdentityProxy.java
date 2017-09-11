@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.want.wso2.WSONet;
+import com.want.wso2.adapter.Call;
 import com.want.wso2.bean.Token;
+import com.want.wso2.callback.Callback;
 import com.want.wso2.utils.TokenUtils;
 import com.want.wso2.utils.WSOLog;
 
@@ -25,7 +27,11 @@ public class IdentityProxy implements TokenCallBack {
         return identityProxy;
     }
 
-    public void checkToken(APIAccessCallBack apiAccessCallBack) {
+    public Token getToken() {
+        return token;
+    }
+
+    public void checkToken(APIAccessCallBack apiAccessCallBack, Call call, Callback callback) {
         this.apiAccessCallBack = apiAccessCallBack;
         if (token == null) {
             TokenStore TokenStore = new TokenStore(WSONet.getInstance().getContext());
@@ -33,23 +39,23 @@ public class IdentityProxy implements TokenCallBack {
             if (this.token == null) {
                 this.apiAccessCallBack.onAPIAccessReceive("token is null", null);
             } else {
-                validateStoredToken();
+                validateStoredToken(call, callback);
             }
         } else {
-            validateStoredToken();
+            validateStoredToken(call, callback);
         }
     }
 
-    private void validateStoredToken() {
+    private void validateStoredToken(Call call, Callback callback) {
         boolean isExpired = TokenUtils.isValid(token.getDate());
-        if (!isExpired) {
+        if (isExpired) {
             WSOLog.d(TAG, "stored token is not expired.");
             synchronized (this) {
                 this.apiAccessCallBack.onAPIAccessReceive("success", token);
             }
         } else {
             Log.d(TAG, "stored token is expired, refreshing");
-            refreshToken();
+            refreshToken(call, callback);
         }
     }
 
@@ -57,10 +63,10 @@ public class IdentityProxy implements TokenCallBack {
         token = null;
     }
 
-    private void refreshToken() {
+    private void refreshToken(Call call, Callback callback) {
         TokenStore TokenStore = new TokenStore(WSONet.getInstance().getContext());
         Authenticator Authenticator = new Authenticator();
-        Authenticator.refreshToken(TokenStore.getTokenUrl(),
+        Authenticator.refreshToken(call, callback, TokenStore.getTokenUrl(),
                                    TokenStore.getClientId(),
                                    TokenStore.getSecrect(),
                                    token);

@@ -35,7 +35,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="url"
-                        android:text="http://wso2dev.hollywant.com:8280"
+                        android:text="http://10.0.35.158:8280"
                         android:textColor="#000"
                         android:textSize="16dp" />
                 </LinearLayout>

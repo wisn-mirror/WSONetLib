@@ -34,16 +34,13 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
     @Override
     public void onStart(final Request<T, ? extends Request> request) {
         super.onStart(request);
-        IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
-            @Override
-            public void onAPIAccessReceive(String status, Token token) {
-                request.headers("Authorization", "Bearer "+token.getAccessToken());
-                request.headers("User-Agent", "Mozilla/5.0 ( compatible ), Android");
-                request.headers("Accept", "application/json");
-                request.headers("Content-Type", "application/json");
-            }
-        });
-
+        request.headers("User-Agent", "Mozilla/5.0 ( compatible ), Android");
+        request.headers("Accept", "application/json");
+        request.headers("Content-Type", "application/json");
+        Token token = IdentityProxy.getInstance().getToken();
+        if(token!=null){
+            request.headers("Authorization", "Bearer "+ token.getAccessToken());
+        }
     }
 
     @Override

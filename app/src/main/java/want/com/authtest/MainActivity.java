@@ -56,8 +56,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        mTokenStore = new TokenStore(this);
-
 //        initConfig();
         setContentView(R.layout.activity_main);
         mScroll_info = (ScrollView) findViewById(R.id.scroll_info);
@@ -72,10 +70,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         shareTextdelete = (TextView) findViewById(R.id.shareTextdelete);
         loginOut = (TextView) findViewById(R.id.loginOut);
         url = (EditText) findViewById(R.id.url);
-        mTokenUrl = mTokenStore.getTokenUrl();
-        if (!TextUtils.isEmpty(mTokenUrl)) {
-            url.setText(mTokenUrl);
-        }
         userName = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.password);
         getPrem.setOnClickListener(this);
@@ -90,12 +84,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     }
 
-    String Ip = "http://10.0.35.158:8280";
 
     @Override
     public void onClick(View view) {
-        Network.Config.Url = url.getText().toString();
-        mTokenStore.saveTokenUrl(url.getText().toString());
+        String Ip  = url.getText().toString();
         String strUserName = userName.getText().toString();
         String strPassword = password.getText().toString();
         Log.e(TAG,strUserName+"  "+strPassword);
@@ -153,7 +145,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         } else if (view == loginOut) {
 
-
+            Authenticator.loginOut();
         } else if (view == getStatus) {
             PaiHang paiHang = new PaiHang();
             paiHang.setUid("20");
