@@ -54,8 +54,6 @@ public class Authenticator {
         String basicAuthValue = "Basic " + base64(userName, password);
         WSONet.<RegisterResponse>post(registerUrl)
                 .upObjectToJson(registrationProfileRequest)
-//                .upJson(registrationProfileRequest.toJSON())
-//                .upJson("{\"applicationName\":\"cdmf_android_867516026498122\",\"consumerKey\":null,\"consumerSecret\":null,\"tags\":[\"android\"],\"isAllowedToAllDomains\":false,\"isMappingAnExistingOAuthApp\":false,\"allowedToAllDomains\":false,\"mappingAnExistingOAuthApp\":false}")
                 .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
                 .headers("Content-Type", "application/json")
                 .headers("Accept", "application/json")
@@ -91,6 +89,16 @@ public class Authenticator {
                         registerListener.onFailure("register error", response.code());
                     }
                 });
+    }
+
+    /**
+     * loginOut
+     */
+    public static void loginOut(){
+        // TODO: 2017/9/11 loginOut
+       /* TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+        IdentityProxy.getInstance()*/
+
     }
 
     public void getToken(String url,

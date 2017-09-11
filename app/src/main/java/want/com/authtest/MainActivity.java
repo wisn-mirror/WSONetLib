@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -21,7 +22,12 @@ import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.utils.Constant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import want.com.authtest.aaa.ConfigurationBean;
+import want.com.authtest.aaa.PaiHang;
+import want.com.authtest.aaa.PaiHangResponse;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -35,9 +41,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Context context;
     private static String[] SUBSCRIBED_API = new String[]{"android"};
     private static String[] roles = new String[]{"admin"};
-    public final static String SCOPES = "default appm:read" +
+   /* public final static String SCOPES = "default appm:read" +
                                         " perm:android:enroll perm:android:disenroll" +
                                         " perm:android:view-configuration perm:android:manage-configuration";
+   */
+   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -82,12 +90,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     }
 
+    String Ip = "http://10.0.35.158:8280";
+
     @Override
     public void onClick(View view) {
         Network.Config.Url = url.getText().toString();
         mTokenStore.saveTokenUrl(url.getText().toString());
         String strUserName = userName.getText().toString();
         String strPassword = password.getText().toString();
+        Log.e(TAG,strUserName+"  "+strPassword);
         if (view == register) {
             String applicationName =
                     Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
@@ -96,10 +107,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
             registrationProfileRequest.setIsAllowedToAllDomains(false);
             registrationProfileRequest.setIsMappingAnExistingOAuthApp(false);
             registrationProfileRequest.setTags(SUBSCRIBED_API);
+            registrationProfileRequest.setTags(new String[]{"device_management"});
             registrationProfileRequest.setConsumerKey(null);
             registrationProfileRequest.setConsumerSecret(null);
-            Authenticator.register("http://wso2dev.hollywant.com:8280/api-application-registration/register",
-                                   "http://wso2dev.hollywant.com:8280/token",
+            Authenticator.register(Ip + "/api-application-registration/register",
+                                   Ip + "/token",
                                    registrationProfileRequest,
                                    strUserName,
                                    strPassword,
@@ -119,12 +131,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                    });
         } else if (view == getConfig) {
             WSONet.<ConfigurationBean>get(
-                    "http://wso2dev.hollywant.com:8280/api/device-mgt/android/v1.0/configuration")
+                    Ip + "/api/device-mgt/android/v1.0/configuration")
                     .execute(new JsonCallback<ConfigurationBean>() {
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
-                            updateView("onSuccess:" + response.body().fault.toString(), true);
-                            updateView("onSuccess:" + response.body().toString(), true);
+                            if (response.body().fault != null) {
+
+                                updateView("onSuccess:" + response.body().fault.toString(), true);
+                            } else {
+                                updateView("onSuccess:" + response.body().toString(), true);
+                            }
                         }
 
                         @Override
@@ -139,7 +155,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
         } else if (view == getStatus) {
+            PaiHang paiHang = new PaiHang();
+            paiHang.setUid("20");
+            paiHang.setPage(1);
+            paiHang.setRoleid("1");
+            paiHang.setDateType("month");
+            List<String> time = new ArrayList<String>();
+            time.add("2017-02");
+            paiHang.setTimes(time);
+            WSONet.<PaiHangResponse>post(
+                    Ip + "/api/yunwang/v1.0/machinerank/machinerank")
+                    .upObjectToJson(paiHang)
+                    .execute(new JsonCallback<PaiHangResponse>() {
+                        @Override
+                        public void onSuccess(com.want.wso2.model.Response<PaiHangResponse> response) {
+                            if (response.body().fault != null) {
+                                updateView("onSuccess:" + response.body().fault.toString(), true);
+                            }
+                            updateView("onSuccess:" + response.body().toString(), true);
 
+                        }
+
+                        @Override
+                        public void onError(com.want.wso2.model.Response<PaiHangResponse> response) {
+                            super.onError(response);
+                            updateView("onFailure:" + response.body(), true);
+
+                        }
+                    });
 
         } else if (view == mUsers) {
 
