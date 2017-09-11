@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.want.wso2.WSONet;
 import com.want.wso2.auth.Authenticator;
-import com.want.wso2.auth.Network;
 import com.want.wso2.auth.TokenStore;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
@@ -28,6 +27,7 @@ import java.util.List;
 import want.com.authtest.aaa.ConfigurationBean;
 import want.com.authtest.aaa.PaiHang;
 import want.com.authtest.aaa.PaiHangResponse;
+import want.com.authtest.backup.Network;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";

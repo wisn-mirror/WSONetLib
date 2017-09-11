@@ -10,8 +10,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import okhttp3.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Headers;
 
 /**
  * Created by wisn on 2017/8/22.
