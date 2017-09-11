@@ -72,4 +72,5 @@ public class TokenStore {
         prefsWriter.remove(Constant.Token_date);
         prefsWriter.apply();
     }
+
 }

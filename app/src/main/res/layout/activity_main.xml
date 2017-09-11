@@ -54,7 +54,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="用户名"
-                        android:text="admin"
+                        android:text="odoo/allen"
                         android:textColor="#000"
                         android:textSize="16dp" />
 
@@ -66,7 +66,7 @@
                         android:gravity="center"
                         android:hint="密码"
                         android:inputType="textPassword"
-                        android:text="admin"
+                        android:text="aaa12er"
                         android:textColor="#000"
                         android:textSize="16dp" />
                 </LinearLayout>

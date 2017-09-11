@@ -1,6 +1,5 @@
 package com.want.wso2.auth;
 
-import com.google.gson.Gson;
 import com.want.wso2.WSONet;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
@@ -12,8 +11,6 @@ import com.want.wso2.model.Response;
 import com.want.wso2.utils.TokenUtils;
 
 import org.apache.commons.codec.binary.Base64;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -94,11 +91,10 @@ public class Authenticator {
     /**
      * loginOut
      */
-    public static void loginOut(){
-        // TODO: 2017/9/11 loginOut
-       /* TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-        IdentityProxy.getInstance()*/
-
+    public static void loginOut() {
+        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+        tokenStore.clearAll();
+        IdentityProxy.getInstance().clearToken();
     }
 
     public void getToken(String url,
