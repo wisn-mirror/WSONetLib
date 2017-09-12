@@ -52,7 +52,7 @@ public class WSONet {
      */
     private WSONet() {
         mDelivery = new Handler(Looper.getMainLooper());
-        mRetryCount = 3;
+        mRetryCount = 0;
         mCacheTime = CacheEntity.CACHE_NEVER_EXPIRE;
         mCacheMode = CacheMode.NO_CACHE;
 
@@ -113,7 +113,7 @@ public class WSONet {
      * @return
      */
     public WSONet setRetryCount(int retryCount) {
-        if (retryCount < 0) throw new IllegalArgumentException("retryCount must > 0");
+        if (retryCount < 0) throw new IllegalArgumentException("retryCount must >= 0");
         mRetryCount = retryCount;
         return this;
     }

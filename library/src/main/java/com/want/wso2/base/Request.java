@@ -371,25 +371,20 @@ public abstract class Request<T, R extends Request> implements Serializable {
     }
 
     /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
-    public void execute(final Callback<T> callback, boolean userToken) {
+    public void execute(final Callback<T> callback, final boolean userToken) {
         HttpUtils.checkNotNull(callback, "callback == null");
         this.callback = callback;
         final Call<T> call = adapt();
         if(userToken){
-            Log.e("execute","userToken");
             IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
                 @Override
                 public void onAPIAccessReceive(String status, Token token) {
                     if(token!=null){
                         headers.put("Authorization", "Bearer "+token.getAccessToken());
                     }
-                    if (call != null && callback != null) {
-                        call.execute(callback);
-                    }
                 }
             },call,callback);
         }else{
-            Log.e("execute","userTokenfalse");
             call.execute(callback);
         }
     }

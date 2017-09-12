@@ -38,6 +38,9 @@ public class IdentityProxy implements TokenCallBack {
             this.token = TokenStore.getToken();
             if (this.token == null) {
                 this.apiAccessCallBack.onAPIAccessReceive("token is null", null);
+                if (call != null && callback != null) {
+                    call.execute(callback);
+                }
             } else {
                 validateStoredToken(call, callback);
             }
@@ -52,6 +55,9 @@ public class IdentityProxy implements TokenCallBack {
             WSOLog.d(TAG, "stored token is not expired.");
             synchronized (this) {
                 this.apiAccessCallBack.onAPIAccessReceive("success", token);
+                if (call != null && callback != null) {
+                    call.execute(callback);
+                }
             }
         } else {
             Log.d(TAG, "stored token is expired, refreshing");

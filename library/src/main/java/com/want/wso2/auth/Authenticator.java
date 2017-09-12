@@ -123,7 +123,7 @@ public class Authenticator {
                 .execute(new TokenCallback<TokenResponse>() {
                     @Override
                     public void onSuccess(Response<TokenResponse> response) {
-                        tokenResponse(response, true);
+                        tokenResponse(response, false);
                     }
 
                     @Override
@@ -154,10 +154,14 @@ public class Authenticator {
                     .execute(new TokenCallback<TokenResponse>() {
                         @Override
                         public void onSuccess(Response<TokenResponse> response) {
-                            tokenResponse(response, false);
-                           /* if (call != null && callback != null) {
+                            tokenResponse(response, true);
+                        }
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            if (call != null && callback != null) {
                                 call.execute(callback);
-                            }*/
+                            }
                         }
 
                         @Override
@@ -190,7 +194,6 @@ public class Authenticator {
             token.setAccessToken(body.getAccess_token());
             token.setExpired(false);
             tokenStore.saveToken(token);
-            Log.e("tokenResponse", token.toString());
             if (isRefresh) {
                 IdentityProxy.getInstance().receiveAccessToken(200, "success", token);
             } else {

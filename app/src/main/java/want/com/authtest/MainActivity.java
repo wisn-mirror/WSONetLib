@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import want.com.authtest.aaa.ConfigurationBean;
+import want.com.authtest.aaa.IndexPage;
 import want.com.authtest.aaa.PaiHang;
 import want.com.authtest.aaa.PaiHangResponse;
 import want.com.authtest.backup.Network;
@@ -45,7 +46,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                         " perm:android:enroll perm:android:disenroll" +
                                         " perm:android:view-configuration perm:android:manage-configuration";
    */
-   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
+//   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
+   public final static String SCOPES = "default perm:svm:view";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -144,7 +146,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });
 
         } else if (view == loginOut) {
-
             Authenticator.loginOut();
         } else if (view == getStatus) {
             PaiHang paiHang = new PaiHang();
@@ -177,6 +178,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });
 
         } else if (view == mUsers) {
+            WSONet.<IndexPage>post(
+                    Ip + "/api/yunwang/v1.0/machinerank/indexpage")
+                    .upJson("{\"uid\":\"20\",\"roleid\":1}")
+                    .execute(new JsonCallback<IndexPage>() {
+                        @Override
+                        public void onSuccess(com.want.wso2.model.Response<IndexPage> response) {
+                            if (response.body().fault != null) {
+                                updateView("onSuccess:" + response.body().fault.toString(), true);
+                            }
+                            updateView("onSuccess:" + response.body().toString(), true);
+
+                        }
+
+                        @Override
+                        public void onError(com.want.wso2.model.Response<IndexPage> response) {
+                            super.onError(response);
+                            updateView("onFailure:" + response.body(), true);
+
+                        }
+                    });
 
         } else if (view == shareText) {
             String result = mTestResult.getText().toString();

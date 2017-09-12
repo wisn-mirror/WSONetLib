@@ -192,7 +192,6 @@
                         android:background="#19ec9f"
                         android:gravity="center"
                         android:text="Users"
-                        android:visibility="gone"
                         android:textColor="#fff"
                         android:textSize="16dp" />
 
