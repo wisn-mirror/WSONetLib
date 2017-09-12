@@ -20,9 +20,7 @@ public class BaseApplication extends Application {
     }
     public void initNetWork(){
         HttpHeaders headers = new HttpHeaders();
-//        headers.put("commonHeaderKey2", "commonHeaderValue2");
         HttpParams params = new HttpParams();
-//        params.put("commonParamsKey1", "commonParamsValue1");
         try {
             WSONet.getInstance()
                   .init(this)

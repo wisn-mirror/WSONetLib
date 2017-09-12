@@ -51,14 +51,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
-    private TokenStore mTokenStore;
-    private String mTokenUrl;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-//        initConfig();
         setContentView(R.layout.activity_main);
         mScroll_info = (ScrollView) findViewById(R.id.scroll_info);
         mUsers = (TextView) findViewById(R.id.users);
