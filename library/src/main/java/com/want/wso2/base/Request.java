@@ -375,7 +375,9 @@ public abstract class Request<T, R extends Request> implements Serializable {
         HttpUtils.checkNotNull(callback, "callback == null");
         this.callback = callback;
         final Call<T> call = adapt();
-        if(userToken){
+        if(!userToken||!WSONet.useToken){
+            call.execute(callback);
+        }else{
             IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
                 @Override
                 public void onAPIAccessReceive(String status, Token token) {
@@ -384,8 +386,6 @@ public abstract class Request<T, R extends Request> implements Serializable {
                     }
                 }
             },call,callback);
-        }else{
-            call.execute(callback);
         }
     }
 }

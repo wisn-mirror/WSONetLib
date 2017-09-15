@@ -46,6 +46,11 @@ public class WSONet {
     private int mRetryCount;                //全局超时重试次数
     private CacheMode mCacheMode;           //全局缓存模式
     private long mCacheTime;                //全局缓存过期时间,默认永不过期
+    public static  boolean useToken = true;
+
+    public void setUseToken(boolean useToken) {
+        this.useToken = useToken;
+    }
 
     /**
      * init config
@@ -428,4 +433,5 @@ public class WSONet {
             call.cancel();
         }
     }
+
 }
