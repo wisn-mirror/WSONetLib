@@ -383,6 +383,9 @@ public abstract class Request<T, R extends Request> implements Serializable {
                 public void onAPIAccessReceive(String status, Token token) {
                     if(token!=null){
                         headers.put("Authorization", "Bearer "+token.getAccessToken());
+                        headers.put("User-Agent", "Mozilla/5.0 ( compatible ), Android");
+                        headers.put("Accept", "application/json");
+                        headers.put("Content-Type", "application/json");
                     }
                 }
             },call,callback);
