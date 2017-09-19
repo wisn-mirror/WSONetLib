@@ -174,7 +174,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });
 
         } else if (view == mUsers) {
-            WSONet.<IndexPage>post(
+            updateView("isLogin:" + Authenticator.isLogin(), true);
+
+            /*WSONet.<IndexPage>post(
                     Ip + "/api/yunwang/v1.0/machinerank/indexpage")
                     .upJson("{\"uid\":\"20\",\"roleid\":1}")
                     .execute(new JsonCallback<IndexPage>() {
@@ -193,7 +195,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             updateView("onFailure:" + response.body(), true);
 
                         }
-                    });
+                    });*/
 
         } else if (view == shareText) {
             String result = mTestResult.getText().toString();

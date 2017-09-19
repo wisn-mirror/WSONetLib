@@ -49,6 +49,14 @@ public class IdentityProxy implements TokenCallBack {
         }
     }
 
+    public Token isLogin(){
+        if (token == null) {
+            TokenStore TokenStore = new TokenStore(WSONet.getInstance().getContext());
+            this.token = TokenStore.getToken();
+        }
+        return token;
+    }
+
     private void validateStoredToken(Call call, Callback callback) {
         boolean isExpired = TokenUtils.isValid(token.getDate());
         if (!isExpired) {

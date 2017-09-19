@@ -1,7 +1,5 @@
 package com.want.wso2.auth;
 
-import android.util.Log;
-
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.Call;
 import com.want.wso2.bean.RegisterResponse;
@@ -9,7 +7,6 @@ import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.Token;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.Callback;
-import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
@@ -94,6 +91,16 @@ public class Authenticator {
     }
 
     /**
+     * 判断是否登录
+     *
+     * @return
+     */
+    public static boolean isLogin() {
+        if (IdentityProxy.getInstance().isLogin() != null) return true;
+        return false;
+    }
+
+    /**
      * loginOut
      */
     public static void loginOut() {
@@ -156,6 +163,7 @@ public class Authenticator {
                         public void onSuccess(Response<TokenResponse> response) {
                             tokenResponse(response, true);
                         }
+
                         @Override
                         public void onFinish() {
                             super.onFinish();
