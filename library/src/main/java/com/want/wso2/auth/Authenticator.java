@@ -101,12 +101,36 @@ public class Authenticator {
     }
 
     /**
-     * loginOut
+     *
+     * @param unRegisterUrl
+     * @param imei  手机的唯一串号
      */
-    public static void loginOut() {
-        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-        tokenStore.clearAll();
-        IdentityProxy.getInstance().clearToken();
+    public static void loginOut(String unRegisterUrl,String imei) {
+        Token token = IdentityProxy.getInstance().getToken();
+        if(token==null)return ;
+        WSONet.<String>delete(unRegisterUrl+"?applicationName=cdmf_android_"+imei)
+                .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
+                .headers("Content-Type", "application/json")
+                .headers("Accept", "*/*")
+                .headers("Authorization",token.getAccessToken() )
+                .execute(new TokenCallback<String>() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+                        tokenStore.clearAll();
+                        IdentityProxy.getInstance().clearToken();
+                    }
+                }, false);
     }
 
     public void getToken(String url,
