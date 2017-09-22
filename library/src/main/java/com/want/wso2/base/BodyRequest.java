@@ -165,9 +165,10 @@ public abstract class BodyRequest<T, R extends BodyRequest> extends Request<T, R
         if (params == null) return content;
         String publicCommonParams = params.toJson();
         if (publicCommonParams == null) return content;
+        String contentStr=content.substring(1, content.length());
+        String contentResult="}".equals(contentStr)?"}":","+contentStr;
         if (content.length() > 0)
-            return publicCommonParams.substring(0, publicCommonParams.length()-1) +","+
-                   content.substring(1, content.length());
+            return publicCommonParams.substring(0, publicCommonParams.length()-1)+contentResult ;
         return content;
     }
 

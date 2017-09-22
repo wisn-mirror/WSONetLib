@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             loginOut, getStatus;
     private EditText url, userName, password;
     private Context context;
-    private static String[] SUBSCRIBED_API = new String[]{"android"};
+    private static String[] SUBSCRIBED_API = new String[]{"device_management"};
     private static String[] roles = new String[]{"admin"};
    /* public final static String SCOPES = "default appm:read" +
                                         " perm:android:enroll perm:android:disenroll" +
@@ -146,6 +146,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Authenticator.loginOut("http://wso2dev.hollywant.com:8280/api-application-registration/unregister",
                                    com.want.wso2.utils.DeviceUtils.getDeviceId(this));
         } else if (view == getStatus) {
+            WSONet.<String>post(
+                    Ip + "/api/yunwang/v1.0/want/history/vmc_supply_refund_list")
+                    .upJson("{a:'a',b:'b'}")
+                    .execute(new JsonCallback<String>() {
+                        @Override
+                        public void onSuccess(com.want.wso2.model.Response<String> response) {
+                            if (response.body() != null) {
+                                updateView("onSuccess:" + response.body().toString(), true);
+                            }
+                            updateView("onSuccess:" + response.body().toString(), true);
+
+                        }
+
+                        @Override
+                        public void onError(com.want.wso2.model.Response<String> response) {
+                            super.onError(response);
+                            updateView("onFailure:" + response.body(), true);
+
+                        }
+                    });
+/*
             PaiHang paiHang = new PaiHang();
             paiHang.setUid("20");
             paiHang.setPage(1);
@@ -173,7 +194,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             updateView("onFailure:" + response.body(), true);
 
                         }
-                    });
+                    });*/
 
         } else if (view == mUsers) {
             updateView("isLogin:" + Authenticator.isLogin(), true);
