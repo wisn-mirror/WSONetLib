@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/token_sdk.iml" filepath="$PROJECT_DIR$/token_sdk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/token_sdk.iml" filepath="$PROJECT_DIR$/token_sdk.iml" />
     </modules>
   </component>
 </project>

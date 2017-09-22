@@ -72,8 +72,8 @@ public class Authenticator {
                                                        body.getClient_secret(),
                                                        userName,
                                                        password,
-                                                       scope);
-                                registerListener.onSuccess(response.body(), response.code());
+                                                       scope,body,registerListener);
+//                                registerListener.onSuccess(response.body(), response.code());
                             } else {
                                 registerListener.onFailure(" RegisterResponse is null ", response.code());
                             }
@@ -138,7 +138,7 @@ public class Authenticator {
                          String clientSecret,
                          String userName,
                          String passWord,
-                         String scope) {
+                         String scope, final RegisterResponse body, final RegisterListener registerListener) {
         if (scope == null) {
             scope = SCOPES;
         }
@@ -155,6 +155,21 @@ public class Authenticator {
                     @Override
                     public void onSuccess(Response<TokenResponse> response) {
                         tokenResponse(response, false);
+                        if(response.isSuccessful()){
+                            if(registerListener!=null){
+                                TokenResponse body1 = response.body();
+                                if(body1!=null){
+                                    registerListener.onSuccess(body,body1,response.code());
+                                }else{
+                                    registerListener.onFailure("get token is failure",response.code());
+                                }
+                            }
+                        }else{
+                            if(registerListener!=null){
+                                registerListener.onFailure("get token is failure",response.code());
+                            }
+                        }
+
                     }
 
                     @Override

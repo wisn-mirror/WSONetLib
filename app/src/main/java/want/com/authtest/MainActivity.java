@@ -17,6 +17,7 @@ import com.want.wso2.auth.Authenticator;
 import com.want.wso2.auth.TokenStore;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
+import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.utils.Constant;
@@ -108,8 +109,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                    SCOPES,
                                    new RegisterListener() {
                                        @Override
-                                       public void onSuccess(RegisterResponse response, int code) {
-                                           updateView("onSuccess:" + response.toJSON(), true);
+                                       public void onSuccess(RegisterResponse response, TokenResponse tokenResponse, int code) {
+                                           updateView("onSuccess:" + response.toJSON()+tokenResponse.toJSON(), true);
 
                                        }
 
@@ -142,7 +143,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });
 
         } else if (view == loginOut) {
-            Authenticator.loginOut();
+            Authenticator.loginOut("http://wso2dev.hollywant.com:8280/api-application-registration/unregister",
+                                   com.want.wso2.utils.DeviceUtils.getDeviceId(this));
         } else if (view == getStatus) {
             PaiHang paiHang = new PaiHang();
             paiHang.setUid("20");
