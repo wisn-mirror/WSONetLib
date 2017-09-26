@@ -101,7 +101,7 @@ public class Authenticator {
     /**
      *
      * @param changePasswordUrl
-     * @param passwordJson
+     * @param passwordJson   : { "oldPassword":"aa","newPassword":"ddd"}
      * @param changePasswordCallBack
      */
     public static void changePassword(String changePasswordUrl, String  passwordJson,
