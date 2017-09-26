@@ -1,5 +1,7 @@
 package com.want.wso2.auth;
 
+import android.util.Log;
+
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.Call;
 import com.want.wso2.bean.RegisterResponse;
@@ -11,6 +13,7 @@ import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
 import com.want.wso2.utils.TokenUtils;
+import com.want.wso2.utils.WSOLog;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -91,6 +94,14 @@ public class Authenticator {
     }
 
     /**
+     * 
+     * @param oldPassword
+     * @param newPassword
+     */
+    public static void changePassword(String oldPassword,String newPassword){
+        //// TODO: 2017/9/26 修改密码 
+    }
+    /**
      * 判断是否登录
      *
      * @return
@@ -110,17 +121,19 @@ public class Authenticator {
         if(token==null)return ;
         WSONet.<String>delete(unRegisterUrl+"?applicationName=cdmf_android_"+imei)
                 .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
-                .headers("Content-Type", "application/json")
                 .headers("Accept", "*/*")
-                .headers("Authorization",token.getAccessToken() )
+                .headers("Authorization","Bearer "+token.getAccessToken() )
+                .headers("Content-Type", "application/json")
                 .execute(new TokenCallback<String>() {
                     @Override
                     public void onSuccess(Response<String> response) {
+                        WSOLog.d("loginOut","onSuccess:"+response.body());
                     }
 
                     @Override
                     public void onError(Response<String> response) {
                         super.onError(response);
+                        WSOLog.d("loginOut","onError:"+response.body());
                     }
 
                     @Override

@@ -143,7 +143,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });
 
         } else if (view == loginOut) {
-            Authenticator.loginOut("http://wso2dev.hollywant.com:8280/api-application-registration/unregister",
+            Authenticator.loginOut( Ip + "/api-application-registration/unregister",
                                    com.want.wso2.utils.DeviceUtils.getDeviceId(this));
         } else if (view == getStatus) {
             WSONet.<String>post(
