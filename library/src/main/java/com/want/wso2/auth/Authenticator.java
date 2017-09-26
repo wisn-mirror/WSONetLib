@@ -2,13 +2,17 @@ package com.want.wso2.auth;
 
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+import com.google.gson.internal.Excluder;
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.Call;
+import com.want.wso2.bean.ChangePasswordResponse;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.Token;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.Callback;
+import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
@@ -16,6 +20,7 @@ import com.want.wso2.utils.TokenUtils;
 import com.want.wso2.utils.WSOLog;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -94,12 +99,65 @@ public class Authenticator {
     }
 
     /**
-     * 
-     * @param oldPassword
-     * @param newPassword
+     *
+     * @param changePasswordUrl
+     * @param passwordJson
+     * @param changePasswordCallBack
      */
-    public static void changePassword(String oldPassword,String newPassword){
-        //// TODO: 2017/9/26 修改密码 
+    public static void changePassword(String changePasswordUrl, String  passwordJson,
+                                      final ChangePasswordCallBack changePasswordCallBack){
+        Token token = IdentityProxy.getInstance().getToken();
+        if(token==null){
+            if(changePasswordCallBack!=null){
+                changePasswordCallBack.onError(401,"Required OAuth credentials not provided. Make sure login in");
+            }
+            return ;
+        }
+        WSONet.<String>put(changePasswordUrl)
+                .upJson(passwordJson)
+                .execute(new JsonCallback<String>() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        if(response.isSuccessful()&&response.code()==200&&response.body()!=null){
+                            if(changePasswordCallBack!=null){
+                                changePasswordCallBack.onSuccess(response.code(),response.body());
+                            }
+                        }else{
+                            try{
+                                if(response.body()!=null){
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    String message = (String) jsonObject.get("message");
+                                    if(changePasswordCallBack!=null){
+                                        changePasswordCallBack.onError(response.code(),message);
+                                    }
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        try{
+                            if(response.body()!=null){
+                                JSONObject jsonObject = new JSONObject(response.body());
+                                String message = (String) jsonObject.get("message");
+                                if(changePasswordCallBack!=null){
+                                    changePasswordCallBack.onError(response.code(),message);
+                                }
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                    }
+                });
     }
     /**
      * 判断是否登录

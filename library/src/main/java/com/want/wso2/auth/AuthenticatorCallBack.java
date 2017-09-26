@@ -6,7 +6,7 @@ import com.want.wso2.bean.Token;
  * Created by wisn on 2017/8/24.
  */
 
-public interface TokenCallBack {
+public interface AuthenticatorCallBack {
     /**
      * Get access token stored in the app preferences.
      *

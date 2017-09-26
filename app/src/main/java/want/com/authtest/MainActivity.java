@@ -14,12 +14,15 @@ import android.widget.Toast;
 
 import com.want.wso2.WSONet;
 import com.want.wso2.auth.Authenticator;
+import com.want.wso2.auth.ChangePasswordCallBack;
 import com.want.wso2.auth.TokenStore;
+import com.want.wso2.bean.ChangePasswordResponse;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.interfaces.RegisterListener;
+import com.want.wso2.model.Response;
 import com.want.wso2.utils.Constant;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import want.com.authtest.aaa.IndexPage;
 import want.com.authtest.aaa.PaiHang;
 import want.com.authtest.aaa.PaiHangResponse;
 import want.com.authtest.backup.Network;
+import want.com.authtest.bean.Password;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -37,9 +41,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public static final int GETTAG = 1;
     public static final int GETPREM = 2;
     private TextView mTestResult, getTAG, getPrem, register, getConfig, shareText,
-            shareTextdelete,
+            shareTextdelete,changePassword,
             loginOut, getStatus;
-    private EditText url, userName, password;
+    private EditText url, userName, password,newpassword;
     private Context context;
     private static String[] SUBSCRIBED_API = new String[]{"device_management"};
     private static String[] roles = new String[]{"admin"};
@@ -48,7 +52,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                         " perm:android:view-configuration perm:android:manage-configuration";
    */
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
-   public final static String SCOPES = "default perm:svm:view";
+//   public final static String SCOPES = "default perm:svm:view";
+   public final static String SCOPES = "default perm:svm:view perm:users:credentials";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -60,6 +65,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mScroll_info = (ScrollView) findViewById(R.id.scroll_info);
         mUsers = (TextView) findViewById(R.id.users);
         mTestResult = (TextView) findViewById(R.id.testResult);
+        changePassword = (TextView) findViewById(R.id.changePassword);
         register = (TextView) findViewById(R.id.register);
         getConfig = (TextView) findViewById(R.id.getConfig);
         shareText = (TextView) findViewById(R.id.shareText);
@@ -71,6 +77,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         url = (EditText) findViewById(R.id.url);
         userName = (EditText) findViewById(R.id.userName);
         password = (EditText) findViewById(R.id.password);
+        newpassword = (EditText) findViewById(R.id.newpassword);
         getPrem.setOnClickListener(this);
         getTAG.setOnClickListener(this);
         register.setOnClickListener(this);
@@ -80,6 +87,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mUsers.setOnClickListener(this);
         loginOut.setOnClickListener(this);
         getStatus.setOnClickListener(this);
+        changePassword.setOnClickListener(this);
 
     }
 
@@ -127,7 +135,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
                             if (response.body().fault != null) {
-
                                 updateView("onSuccess:" + response.body().fault.toString(), true);
                             } else {
                                 updateView("onSuccess:" + response.body().toString(), true);
@@ -145,7 +152,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } else if (view == loginOut) {
             Authenticator.loginOut( Ip + "/api-application-registration/unregister",
                                    com.want.wso2.utils.DeviceUtils.getDeviceId(this));
-        } else if (view == getStatus) {
+        } else  if(view==changePassword){
+            Authenticator.changePassword(Ip + "/api/device-mgt/v1.0/users/credentials",
+                                         new Password(password.getText().toString(),
+                                                      newpassword.getText().toString()).toJSON(),
+                                         new ChangePasswordCallBack() {
+                                             @Override
+                                             public void onSuccess(int code,String response) {
+                                                 updateView("onSuccess:" + response, true);
+
+                                             }
+
+                                             @Override
+                                             public void onError(int code,String response) {
+                                                 updateView("onFailure:" + response, true);
+                                             }
+                                         });
+
+        }else if (view == getStatus) {
             WSONet.<String>post(
                     Ip + "/api/yunwang/v1.0/want/history/vmc_supply_refund_list")
                     .upJson("{a:'a',b:'b'}")

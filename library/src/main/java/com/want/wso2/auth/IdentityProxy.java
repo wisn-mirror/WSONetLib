@@ -14,7 +14,7 @@ import com.want.wso2.utils.WSOLog;
  * Created by wisn on 2017/8/21.
  */
 
-public class IdentityProxy implements TokenCallBack {
+public class IdentityProxy implements AuthenticatorCallBack {
     private static final String TAG = "IdentityProxy";
     private static Token token = null;
     private static IdentityProxy identityProxy = new IdentityProxy();
