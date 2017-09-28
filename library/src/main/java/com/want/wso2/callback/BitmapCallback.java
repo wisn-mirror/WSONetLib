@@ -33,4 +33,7 @@ public abstract class BitmapCallback extends AbsCallback<Bitmap> {
         response.close();
         return bitmap;
     }
+    public void netWorkError(String msg){
+
+    }
 }

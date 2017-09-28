@@ -10,5 +10,6 @@ import com.want.wso2.bean.TokenResponse;
 public interface RegisterListener {
     void onSuccess(RegisterResponse response, TokenResponse tokenResponse, int code);
     void onFailure(String resonseStr,int code);
+    void netWorkError(String msg) ;
 
 }

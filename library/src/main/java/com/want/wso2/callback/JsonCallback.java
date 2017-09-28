@@ -59,4 +59,8 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         JsonConvert<T> convert = new JsonConvert<>(type);
         return convert.convertResponse(response);
     }
+
+    public void netWorkError(String msg){
+
+    }
 }

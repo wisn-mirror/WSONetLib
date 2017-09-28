@@ -22,4 +22,7 @@ public abstract class StringCallback extends AbsCallback<String> {
         response.close();
         return s;
     }
+    public void netWorkError(String msg){
+
+    }
 }

@@ -95,6 +95,11 @@ public class Authenticator {
                         super.onError(response);
                         registerListener.onFailure("register error", response.code());
                     }
+                    @Override
+                    public void netWorkError(String msg) {
+                        super.netWorkError(msg);
+                        registerListener.netWorkError(msg);
+                    }
                 }, false);
     }
 
@@ -106,7 +111,7 @@ public class Authenticator {
      */
     public static void changePassword(String changePasswordUrl, String  passwordJson,
                                       final ChangePasswordCallBack changePasswordCallBack){
-        Token token = IdentityProxy.getInstance().getToken();
+        Token token = IdentityProxy.getInstance().isLogin();
         if(token==null){
             if(changePasswordCallBack!=null){
                 changePasswordCallBack.onError(401,"Required OAuth credentials not provided. Make sure login in");
@@ -154,6 +159,14 @@ public class Authenticator {
                     }
 
                     @Override
+                    public void netWorkError(String msg) {
+                        super.netWorkError(msg);
+                        if(changePasswordCallBack!=null){
+                            changePasswordCallBack.netWorkError(msg);
+                        }
+                    }
+
+                    @Override
                     public void onFinish() {
                         super.onFinish();
                     }
@@ -197,10 +210,20 @@ public class Authenticator {
                     @Override
                     public void onFinish() {
                         super.onFinish();
+                        clearPassword();
+                    }
+
+                    @Override
+                    public void netWorkError(String msg) {
+                        super.netWorkError(msg);
+                        clearPassword();
+                    }
+                    public void clearPassword(){
                         TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
                         tokenStore.clearAll();
                         IdentityProxy.getInstance().clearToken();
                     }
+
                 }, false);
     }
 

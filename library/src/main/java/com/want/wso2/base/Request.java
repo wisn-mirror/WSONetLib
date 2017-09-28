@@ -373,6 +373,10 @@ public abstract class Request<T, R extends Request> implements Serializable {
     /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
     public void execute(final Callback<T> callback, final boolean userToken) {
         HttpUtils.checkNotNull(callback, "callback == null");
+        if(!HttpUtils.isNetConnected()){
+            callback.netWorkError("无网络");
+            return ;
+        }
         this.callback = callback;
         final Call<T> call = adapt();
         if(!userToken||!WSONet.useToken){

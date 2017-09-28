@@ -1,5 +1,8 @@
 package com.want.wso2.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -20,6 +23,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import com.want.wso2.WSONet;
+import com.want.wso2.callback.Callback;
 import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpParams;
 
@@ -198,6 +202,21 @@ public class HttpUtils {
             throw new NullPointerException(message);
         }
         return object;
+    }
+
+    public static  boolean isNetConnected() {
+        ConnectivityManager cm = (ConnectivityManager) WSONet.getInstance().getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo[] infos = cm.getAllNetworkInfo();
+            if (infos != null) {
+                for (NetworkInfo ni : infos) {
+                    if (ni.isConnected()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static void runOnUiThread(Runnable runnable) {

@@ -31,4 +31,8 @@ public interface Callback<T> extends Converter<T> {
 
     /** 下载过程中的进度回调，UI线程 */
     void downloadProgress(Progress progress);
+
+    /** 无网络错误@param msg  */
+    void netWorkError(String msg);
+
 }

@@ -127,6 +127,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                            updateView("onFailure:" + resonseStr, true);
 
                                        }
+                                       @Override
+                                       public void netWorkError(String msg) {
+                                           updateView("netWorkError:"+msg, true);
+                                       }
                                    });
         } else if (view == getConfig) {
             WSONet.<ConfigurationBean>get(
@@ -147,6 +151,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             updateView("onFailure:" + response.body(), true);
 
                         }
+                        @Override
+                        public void netWorkError(String msg) {
+                            super.netWorkError(msg);
+                            updateView("netWorkError:"+msg, true);
+                        }
                     });
 
         } else if (view == loginOut) {
@@ -166,6 +175,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                              @Override
                                              public void onError(int code,String response) {
                                                  updateView("onFailure:" + response, true);
+                                             }
+
+                                             @Override
+                                             public void netWorkError(String msg) {
+                                                 updateView("netWorkError:"+msg, true);
                                              }
                                          });
 
@@ -188,6 +202,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             super.onError(response);
                             updateView("onFailure:" + response.body(), true);
 
+                        }
+
+                        @Override
+                        public void netWorkError(String msg) {
+                            super.netWorkError(msg);
+                            updateView("netWorkError:"+msg, true);
                         }
                     });
 /*

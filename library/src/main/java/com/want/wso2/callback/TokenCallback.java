@@ -1,9 +1,6 @@
 package com.want.wso2.callback;
 
-import com.want.wso2.auth.APIAccessCallBack;
-import com.want.wso2.auth.IdentityProxy;
 import com.want.wso2.base.Request;
-import com.want.wso2.bean.Token;
 import com.want.wso2.convert.JsonConvert;
 
 import java.lang.reflect.ParameterizedType;
@@ -51,5 +48,8 @@ public abstract class TokenCallback<T> extends AbsCallback<T> {
 
         JsonConvert<T> convert = new JsonConvert<>(type);
         return convert.convertResponse(response);
+    }
+    public void netWorkError(String msg){
+
     }
 }

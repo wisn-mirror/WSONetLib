@@ -35,4 +35,7 @@ public abstract class AbsCallback<T> implements Callback<T> {
     @Override
     public void downloadProgress(Progress progress) {
     }
+    public void netWorkError(String msg){
+
+    }
 }

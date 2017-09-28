@@ -10,4 +10,5 @@ import com.want.wso2.model.Response;
 public interface ChangePasswordCallBack {
      void onSuccess(int code,String response) ;
      void onError(int code,String msg) ;
+     void netWorkError(String msg) ;
 }
