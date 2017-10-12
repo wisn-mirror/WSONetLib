@@ -47,9 +47,6 @@ public class JsonConvert<T> implements Converter<T> {
             }
         }
         if (response == null) return null;
-        if (response.code() == 401 || response.code() == 403) {
-            WSONet.getInstance().loginExpireCallBack();
-        }
         if (type instanceof ParameterizedType) {
             return parseParameterizedType(response, (ParameterizedType) type);
         } else if (type instanceof Class) {

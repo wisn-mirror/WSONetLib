@@ -1,5 +1,6 @@
 package com.want.wso2.callback;
 
+import com.want.wso2.WSONet;
 import com.want.wso2.auth.APIAccessCallBack;
 import com.want.wso2.auth.IdentityProxy;
 import com.want.wso2.base.Request;
@@ -54,6 +55,10 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
                 JsonConvert<T> convert = new JsonConvert<>(clazz);
                 return convert.convertResponse(response);
             }
+        }
+
+        if (response.code() == 401 || response.code() == 403) {
+            WSONet.getInstance().loginExpireCallBack();
         }
 
         JsonConvert<T> convert = new JsonConvert<>(type);
