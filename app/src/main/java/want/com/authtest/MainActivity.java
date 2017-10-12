@@ -21,6 +21,7 @@ import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
+import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
 import com.want.wso2.utils.Constant;
@@ -88,7 +89,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         loginOut.setOnClickListener(this);
         getStatus.setOnClickListener(this);
         changePassword.setOnClickListener(this);
-
+        WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
+            @Override
+            public void LoginExpire() {
+                updateView("  重新登录  ", true);
+            }
+        });
     }
 
 
@@ -118,13 +124,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                    new RegisterListener() {
                                        @Override
                                        public void onSuccess(RegisterResponse response, TokenResponse tokenResponse, int code) {
-                                           updateView("onSuccess:" + response.toJSON()+tokenResponse.toJSON(), true);
+                                           updateView("onSuccess:code:"+code +" "+ response.toJSON()+tokenResponse.toJSON(), true);
 
                                        }
 
                                        @Override
                                        public void onFailure(String resonseStr, int code) {
-                                           updateView("onFailure:" + resonseStr, true);
+                                           updateView("onFailure:code:"+code +" " + resonseStr, true);
 
                                        }
                                        @Override
@@ -184,9 +190,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                          });
 
         }else if (view == getStatus) {
-            WSONet.<String>post(
-                    Ip + "/api/yunwang/v1.0/want/history/vmc_supply_refund_list")
-                    .upJson("{a:'a',b:'b'}")
+            WSONet.<String>get(
+                    Ip + "/api/svm/v1.0/supply/return/products")
+//                    .upJson("{a:'a',b:'b'}")
                     .execute(new JsonCallback<String>() {
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<String> response) {

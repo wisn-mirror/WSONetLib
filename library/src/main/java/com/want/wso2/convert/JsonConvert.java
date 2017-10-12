@@ -1,8 +1,8 @@
 package com.want.wso2.convert;
 
 import com.google.gson.stream.JsonReader;
+import com.want.wso2.WSONet;
 import com.want.wso2.bean.BaseNetBean;
-import com.want.wso2.bean.Fault;
 import com.want.wso2.bean.SimpleResponse;
 import com.want.wso2.utils.Convert;
 
@@ -45,6 +45,10 @@ public class JsonConvert<T> implements Converter<T> {
             } else {
                 return parseClass(response, clazz);
             }
+        }
+        if (response == null) return null;
+        if (response.code() == 401 || response.code() == 403) {
+            WSONet.getInstance().loginExpireCallBack();
         }
         if (type instanceof ParameterizedType) {
             return parseParameterizedType(response, (ParameterizedType) type);

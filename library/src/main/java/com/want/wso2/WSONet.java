@@ -10,6 +10,7 @@ import com.want.wso2.cache.CacheMode;
 import com.want.wso2.cookie.CookieJarImpl;
 import com.want.wso2.https.HttpsUtils;
 import com.want.wso2.interceptor.HttpLoggingInterceptor;
+import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpParams;
 import com.want.wso2.request.DeleteRequest;
@@ -34,7 +35,6 @@ import okhttp3.OkHttpClient;
  */
 public class WSONet {
 
-
     public static final long DEFAULT_MILLISECONDS = 15000;      //默认的超时时间
     public static long REFRESH_TIME = 300;                      //回调刷新时间（单位ms）
 
@@ -46,10 +46,21 @@ public class WSONet {
     private int mRetryCount;                //全局超时重试次数
     private CacheMode mCacheMode;           //全局缓存模式
     private long mCacheTime;                //全局缓存过期时间,默认永不过期
-    public static  boolean useToken = true;
+    public static boolean useToken = true;
+    private LoginExpireCallBack loginExpireCallBack;
 
     public void setUseToken(boolean useToken) {
         this.useToken = useToken;
+    }
+
+    public void setLoginExpireCallBack(LoginExpireCallBack loginExpireCallBack) {
+        this.loginExpireCallBack = loginExpireCallBack;
+    }
+
+    public void loginExpireCallBack() {
+        if (this.loginExpireCallBack != null) {
+            loginExpireCallBack.LoginExpire();
+        }
     }
 
     /**
