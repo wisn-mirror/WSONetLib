@@ -16,6 +16,7 @@ import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
+import com.want.wso2.utils.Constant;
 import com.want.wso2.utils.TokenUtils;
 import com.want.wso2.utils.WSOLog;
 
@@ -190,7 +191,7 @@ public class Authenticator {
     public static void loginOut(String unRegisterUrl,String imei) {
         Token token = IdentityProxy.getInstance().getToken();
         if(token==null)return ;
-        WSONet.<String>delete(unRegisterUrl+"?applicationName=cdmf_android_"+imei)
+        WSONet.<String>delete(unRegisterUrl + "?applicationName=" + Constant.API_APPLICATION_NAME_PREFIX+ imei)
                 .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
                 .headers("Accept", "*/*")
                 .headers("Authorization","Bearer "+token.getAccessToken() )

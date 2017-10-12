@@ -84,7 +84,7 @@ public class WSONet {
         headers.put("appname", DeviceUtils.getAppName(this.getContext()));*/
         HttpParams params = new HttpParams();
         params.put("app_version", DeviceUtils.getAppVersion(this.getContext()));
-        params.put("app_code", DeviceUtils.getAppCode(this.getContext()));
+        params.put("app_versioncode", DeviceUtils.getAppCode(this.getContext()));
         addCommonParams(params);
         addCommonHeaders(headers);
     }

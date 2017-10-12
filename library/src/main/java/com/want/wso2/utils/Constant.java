@@ -5,7 +5,7 @@ package com.want.wso2.utils;
  */
 
 public class Constant {
-    public final static String API_APPLICATION_NAME_PREFIX = "cdmf_android_";
+    public final static String API_APPLICATION_NAME_PREFIX = "yunwang_android_";
     public final static String Token_Store = "tokenStore";
     public final static String clientId = "clientId";
     public final static String tokenUrl = "tokenUrl";
