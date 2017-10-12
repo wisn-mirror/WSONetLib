@@ -5,7 +5,6 @@ package com.want.wso2.base;
  */
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.AdapterParam;

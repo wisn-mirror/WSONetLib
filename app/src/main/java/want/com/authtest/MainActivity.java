@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,11 +22,17 @@ import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
+import com.want.wso2.db.DownloadManager;
+import com.want.wso2.download.Download;
+import com.want.wso2.download.DownloadListener;
 import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
+import com.want.wso2.model.Progress;
 import com.want.wso2.model.Response;
+import com.want.wso2.request.GetRequest;
 import com.want.wso2.utils.Constant;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,7 +278,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     });*/
 
         } else if (view == shareText) {
-            String result = mTestResult.getText().toString();
+            download();
+            /*String result = mTestResult.getText().toString();
             if (!TextUtils.isEmpty(result)) {
                 Intent intent1 = new Intent(Intent.ACTION_SEND);
                 intent1.putExtra(Intent.EXTRA_TEXT, result);
@@ -279,7 +287,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(Intent.createChooser(intent1, "share"));
             } else {
                 toast("结果为空！");
-            }
+            }*/
         } else if (view == shareTextdelete) {
             mTestResult.setText("");
         } else if (view == getTAG) {
@@ -321,6 +329,47 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 mScroll_info.fullScroll(ScrollView.FOCUS_DOWN);//滚动到底部
             }
         });
+    }
+    public void download(){
+        try {
+            Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+            Download.getInstance().getThreadPool().setCorePoolSize(3);
+            List<Progress> progressList = DownloadManager.getInstance().getAll();
+            Download.restore(progressList);
+            GetRequest<File>
+                    request = WSONet.<File>get("http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk").headers("aaa", "111").params("bbb", "222");
+            Download.request("Tag", request)
+                    .save()//
+                    .register(new DownloadListener("Tag") {
+                        @Override
+                        public void onStart(Progress progress) {
+                            Log.d(TAG,"onStart  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                        }
+
+                        @Override
+                        public void onProgress(Progress progress) {
+                            Log.d(TAG,"onProgress  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                        }
+
+                        @Override
+                        public void onError(Progress progress) {
+                            Log.d(TAG,"onError  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                        }
+
+                        @Override
+                        public void onFinish(File file, Progress progress) {
+                            Log.d(TAG,"onFinish  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                        }
+
+                        @Override
+                        public void onRemove(Progress progress) {
+                            Log.d(TAG,"onRemove  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                        }
+                    })
+                    .start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void toast(final String message) {

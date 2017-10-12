@@ -92,8 +92,7 @@ public class DeviceUtils {
                 deviceId = deviceId.trim();
                 Pattern p = Pattern.compile("IMEI", Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(deviceId);
-                deviceId = m.replaceAll(" ");
-                deviceId = deviceId.replace(":", " ");
+                deviceId = m.replaceAll(" ").replace(":", " ");
             }
         }
         return deviceId;
