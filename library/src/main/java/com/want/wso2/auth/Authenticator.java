@@ -1,12 +1,7 @@
 package com.want.wso2.auth;
 
-import android.util.Log;
-
-import com.google.gson.JsonObject;
-import com.google.gson.internal.Excluder;
 import com.want.wso2.WSONet;
 import com.want.wso2.adapter.Call;
-import com.want.wso2.bean.ChangePasswordResponse;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.Token;
@@ -16,11 +11,10 @@ import com.want.wso2.callback.JsonCallback;
 import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
+import com.want.wso2.utils.Base64Utils;
 import com.want.wso2.utils.Constant;
 import com.want.wso2.utils.TokenUtils;
 import com.want.wso2.utils.WSOLog;
-
-import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -348,7 +342,7 @@ public class Authenticator {
 
     public static String base64(String obj1, String obj2) {
         if (obj1 != null && obj2 != null) {
-            return new String(Base64.encodeBase64((obj1 + ":" + obj2).getBytes()));
+            return Base64Utils.encode((obj1 + ":" + obj2).getBytes());
         }
         return null;
     }

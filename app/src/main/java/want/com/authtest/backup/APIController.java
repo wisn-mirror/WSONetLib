@@ -7,8 +7,8 @@ import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenRequest;
 import com.want.wso2.bean.TokenResponse;
+import com.want.wso2.utils.Base64Utils;
 
-import org.apache.commons.codec.binary.Base64;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -116,7 +116,7 @@ public class APIController {
 
     public String base64(String obj1, String obj2) {
         if (obj1 != null && obj2 != null) {
-            return new String(Base64.encodeBase64((obj1 + ":" + obj2).getBytes()));
+            return Base64Utils.encode((obj1 + ":" + obj2).getBytes());
         }
         return null;
     }
