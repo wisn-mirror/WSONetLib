@@ -5,5 +5,5 @@ package com.want.wso2.interfaces;
  */
 
 public interface LoginExpireCallBack {
-    void LoginExpire();
+    void LoginExpire(String tag);
 }

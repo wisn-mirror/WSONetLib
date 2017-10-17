@@ -98,7 +98,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         changePassword.setOnClickListener(this);
         WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
             @Override
-            public void LoginExpire() {
+            public void LoginExpire(String tag) {
+                if("changepassword".equals(tag)){
+
+                }else{
+
+                }
                 updateView("  重新登录  ", true);
             }
         });
@@ -200,6 +205,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             WSONet.<String>get(
                     Ip + "/api/svm/v1.0/supply/return/products")
 //                    .upJson("{a:'a',b:'b'}")
+                .tag("changepassword")
                     .execute(new JsonCallback<String>() {
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<String> response) {

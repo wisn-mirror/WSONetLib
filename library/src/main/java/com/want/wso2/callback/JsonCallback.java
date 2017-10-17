@@ -1,7 +1,6 @@
 package com.want.wso2.callback;
 
 import com.want.wso2.WSONet;
-import com.want.wso2.auth.APIAccessCallBack;
 import com.want.wso2.auth.IdentityProxy;
 import com.want.wso2.base.Request;
 import com.want.wso2.bean.Token;
@@ -39,8 +38,8 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         request.headers("Accept", "application/json");
         request.headers("Content-Type", "application/json");
         Token token = IdentityProxy.getInstance().getToken();
-        if(token!=null){
-            request.headers("Authorization", "Bearer "+ token.getAccessToken());
+        if (token != null) {
+            request.headers("Authorization", "Bearer " + token.getAccessToken());
         }
     }
 
@@ -56,16 +55,18 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
                 return convert.convertResponse(response);
             }
         }
-
         if (response.code() == 401 || response.code() == 403) {
-            WSONet.getInstance().loginExpireCallBack();
+            String tag = null;
+            if (response.request() != null && response.request().tag() != null)
+                tag = response.request().tag().toString();
+            WSONet.getInstance().loginExpireCallBack(tag);
         }
 
         JsonConvert<T> convert = new JsonConvert<>(type);
         return convert.convertResponse(response);
     }
 
-    public void netWorkError(String msg){
+    public void netWorkError(String msg) {
 
     }
 }

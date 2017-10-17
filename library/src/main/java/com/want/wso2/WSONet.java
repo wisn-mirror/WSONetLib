@@ -57,9 +57,9 @@ public class WSONet {
         this.loginExpireCallBack = loginExpireCallBack;
     }
 
-    public void loginExpireCallBack() {
+    public void loginExpireCallBack(String tag) {
         if (this.loginExpireCallBack != null) {
-            loginExpireCallBack.LoginExpire();
+            loginExpireCallBack.LoginExpire(tag);
         }
     }
 
