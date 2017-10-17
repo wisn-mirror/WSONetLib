@@ -20,7 +20,10 @@ public abstract class StringCallback extends AbsCallback<String> {
     @Override
     public String convertResponse(Response response) throws Throwable {
         if (response.code() == 401 || response.code() == 403) {
-            WSONet.getInstance().loginExpireCallBack();
+            String tag = null;
+            if (response.request() != null && response.request().tag() != null)
+                tag = response.request().tag().toString();
+            WSONet.getInstance().loginExpireCallBack(tag);
         }
         if(convert==null){
             convert = new StringConvert();
