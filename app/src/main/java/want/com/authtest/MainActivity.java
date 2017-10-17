@@ -187,7 +187,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                                              @Override
                                              public void onError(int code,String response) {
-                                                 updateView("onFailure:" + response, true);
+                                                 updateView("onError:" + response+ code, true);
                                              }
 
                                              @Override

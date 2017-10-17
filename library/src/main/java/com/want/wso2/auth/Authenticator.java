@@ -141,12 +141,14 @@ public class Authenticator {
                     public void onError(Response<String> response) {
                         super.onError(response);
                         try{
+                            String message =null;
                             if(response.body()!=null){
                                 JSONObject jsonObject = new JSONObject(response.body());
-                                String message = (String) jsonObject.get("message");
-                                if(changePasswordCallBack!=null){
-                                    changePasswordCallBack.onError(response.code(),message);
-                                }
+                                message = (String) jsonObject.get("message");
+                            }
+                            if(changePasswordCallBack!=null){
+                                changePasswordCallBack.onError(response.code(),message);
+                                return ;
                             }
                         }catch (Exception e){
                             e.printStackTrace();
