@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import want.com.authtest.aaa.Configuration;
 import want.com.authtest.aaa.ConfigurationBean;
 import want.com.authtest.aaa.IndexPage;
 import want.com.authtest.aaa.PaiHang;
@@ -98,7 +99,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         changePassword.setOnClickListener(this);
         WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
             @Override
-            public void LoginExpire(String tag) {
+            public void LoginExpire(String tag,int code) {
                 if("changepassword".equals(tag)){
 
                 }else{
@@ -157,6 +158,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
                             if (response.body().fault != null) {
+                                ConfigurationBean body = response.body();
                                 updateView("onSuccess:" + response.body().fault.toString(), true);
                             } else {
                                 updateView("onSuccess:" + response.body().toString(), true);
@@ -304,6 +306,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Intent intent = new Intent(this, ChrooseItemActivity.class);
             intent.putExtra(ChrooseItemActivity.ChrooseTypeIsTAG, false);
             startActivityForResult(intent, GETPREM);
+
         }
     }
 
@@ -379,12 +382,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     public void toast(final String message) {
-        runOnUiThread(new Runnable() {
+        WSONet.<ConfigurationBean>post("")
+                .tag("")
+                .execute(new JsonCallback<ConfigurationBean>() {
+                    @Override
+                    public void onSuccess(Response<ConfigurationBean> response) {
+                        ConfigurationBean body = response.body();
+                        List<Configuration> configuration = body.configuration;
+                    }
+
+                    @Override
+                    public void onError(Response<ConfigurationBean> response) {
+                        super.onError(response);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                    }
+
+                    @Override
+                    public void netWorkError(String msg) {
+                        super.netWorkError(msg);
+                    }
+                });
+       /* runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
     }
+
 }

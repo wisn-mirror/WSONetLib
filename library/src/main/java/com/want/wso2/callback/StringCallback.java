@@ -23,7 +23,7 @@ public abstract class StringCallback extends AbsCallback<String> {
             String tag = null;
             if (response.request() != null && response.request().tag() != null)
                 tag = response.request().tag().toString();
-            WSONet.getInstance().loginExpireCallBack(tag);
+            WSONet.getInstance().loginExpireCallBack(tag,response.code());
         }
         if(convert==null){
             convert = new StringConvert();

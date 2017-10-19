@@ -59,7 +59,7 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
             String tag = null;
             if (response.request() != null && response.request().tag() != null)
                 tag = response.request().tag().toString();
-            WSONet.getInstance().loginExpireCallBack(tag);
+            WSONet.getInstance().loginExpireCallBack(tag,response.code());
         }
 
         JsonConvert<T> convert = new JsonConvert<>(type);
