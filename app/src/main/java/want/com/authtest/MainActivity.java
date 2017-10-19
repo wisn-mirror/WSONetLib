@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
    */
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
 //   public final static String SCOPES = "default perm:svm:view";
-   public final static String SCOPES = "default perm:svm:view perm:users:credentials";
+   public final static String SCOPES = "default perm:users:credentials";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -105,7 +105,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }else{
 
                 }
-                updateView("  重新登录  ", true);
+                updateView("  重新登录  "+code, true);
             }
         });
     }
@@ -214,7 +214,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             if (response.body() != null) {
                                 updateView("onSuccess:" + response.body().toString(), true);
                             }
-                            updateView("onSuccess:" + response.body().toString(), true);
+//                            updateView("onSuccess:" + response.body().toString(), true);
 
                         }
 
@@ -382,7 +382,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     public void toast(final String message) {
-        WSONet.<ConfigurationBean>post("")
+       /* WSONet.<ConfigurationBean>post("")
                 .tag("")
                 .execute(new JsonCallback<ConfigurationBean>() {
                     @Override
@@ -405,13 +405,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     public void netWorkError(String msg) {
                         super.netWorkError(msg);
                     }
-                });
-       /* runOnUiThread(new Runnable() {
+                });*/
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
     }
 
