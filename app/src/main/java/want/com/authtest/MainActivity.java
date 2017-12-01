@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
    */
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
 //   public final static String SCOPES = "default perm:svm:view";
-   public final static String SCOPES = "default perm:users:credentials";
+   public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -77,10 +77,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         changePassword = (TextView) findViewById(R.id.changePassword);
         register = (TextView) findViewById(R.id.register);
         getConfig = (TextView) findViewById(R.id.getConfig);
-        shareText = (TextView) findViewById(R.id.shareText);
         getTAG = (TextView) findViewById(R.id.getTAG);
         getPrem = (TextView) findViewById(R.id.getPrem);
         getStatus = (TextView) findViewById(R.id.getStatus);
+        shareText = (TextView) findViewById(R.id.shareText);
         shareTextdelete = (TextView) findViewById(R.id.shareTextdelete);
         loginOut = (TextView) findViewById(R.id.loginOut);
         url = (EditText) findViewById(R.id.url);
@@ -205,7 +205,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         }else if (view == getStatus) {
             WSONet.<String>get(
-                    Ip + "/api/svm/v1.0/supply/return/products")
+//                    Ip + "/api/svm/v1.0/supply/return/products")
+                    Ip + "/api/svm/v1.0/index/home")
 //                    .upJson("{a:'a',b:'b'}")
                 .tag("changepassword")
                     .execute(new JsonCallback<String>() {

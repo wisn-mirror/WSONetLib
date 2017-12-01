@@ -35,7 +35,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="url"
-                        android:text="http://iotdemo01.hollywant.com:8280"
+                        android:text="http://10.0.34.129:8280"
                         android:textColor="#000"
                         android:textSize="16dp" />
                 </LinearLayout>
@@ -54,7 +54,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="用户名"
-                        android:text="odoo/wang3"
+                        android:text="odoo/wang1"
                         android:textColor="#000"
                         android:textSize="16dp" />
 

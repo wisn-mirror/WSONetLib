@@ -14,4 +14,10 @@ public class Constant {
     public final static String Token_refreshtoken = "Token_refreshtoken";
     public final static String Token_date = "Token_date";
 
+    public final static String Register_Store = "RegisterStore";
+    public final static String RegisterUrl = "registerUrl";
+    public final static String RegistrationProfileRequestjson = "registrationProfileRequestjson";
+    public final static String UserName = "userName";
+    public final static String password = "password";
+    public final static String scope = "scope";
 }
