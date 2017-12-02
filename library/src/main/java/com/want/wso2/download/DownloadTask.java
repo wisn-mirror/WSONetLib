@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.want.wso2.base.Request;
 import com.want.wso2.db.DownloadManager;
 import com.want.wso2.exception.HttpException;
-import com.want.wso2.exception.OkGoException;
+import com.want.wso2.exception.WSONetException;
 import com.want.wso2.exception.StorageException;
 import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.Progress;
@@ -194,14 +194,14 @@ public class DownloadTask implements Runnable {
         //check breakpoint
         long startPosition = progress.currentSize;
         if (startPosition < 0) {
-            postOnError(progress, OkGoException.BREAKPOINT_EXPIRED());
+            postOnError(progress, WSONetException.BREAKPOINT_EXPIRED());
             return;
         }
         if (startPosition > 0) {
             if (!TextUtils.isEmpty(progress.filePath)) {
                 File file = new File(progress.filePath);
                 if (!file.exists()) {
-                    postOnError(progress, OkGoException.BREAKPOINT_NOT_EXIST());
+                    postOnError(progress, WSONetException.BREAKPOINT_NOT_EXIST());
                     return;
                 }
             }
@@ -253,11 +253,11 @@ public class DownloadTask implements Runnable {
             file = new File(progress.filePath);
         }
         if (startPosition > 0 && !file.exists()) {
-            postOnError(progress, OkGoException.BREAKPOINT_EXPIRED());
+            postOnError(progress, WSONetException.BREAKPOINT_EXPIRED());
             return;
         }
         if (startPosition > progress.totalSize) {
-            postOnError(progress, OkGoException.BREAKPOINT_EXPIRED());
+            postOnError(progress, WSONetException.BREAKPOINT_EXPIRED());
             return;
         }
         if (startPosition == 0 && file.exists()) {
@@ -268,7 +268,7 @@ public class DownloadTask implements Runnable {
                 postOnFinish(progress, file);
                 return;
             } else {
-                postOnError(progress, OkGoException.BREAKPOINT_EXPIRED());
+                postOnError(progress, WSONetException.BREAKPOINT_EXPIRED());
                 return;
             }
         }
@@ -298,10 +298,10 @@ public class DownloadTask implements Runnable {
             if (file.length() == progress.totalSize) {
                 postOnFinish(progress, file);
             } else {
-                postOnError(progress, OkGoException.BREAKPOINT_EXPIRED());
+                postOnError(progress, WSONetException.BREAKPOINT_EXPIRED());
             }
         } else {
-            postOnError(progress, OkGoException.UNKNOWN());
+            postOnError(progress, WSONetException.UNKNOWN());
         }
     }
 
