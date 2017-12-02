@@ -305,7 +305,8 @@ public abstract class Request<T, R extends Request> implements Serializable {
     public Converter<T> getConverter() {
         // converter 优先级高于 callback
         if (converter == null) converter = callback;
-        HttpUtils.checkNotNull(converter, "converter == null, do you forget to call Request#converter(Converter<T>) ?");
+        HttpUtils.checkNotNull(converter,
+                               "converter == null, do you forget to call Request#converter(Converter<T>) ?");
         return converter;
     }
 
@@ -366,29 +367,34 @@ public abstract class Request<T, R extends Request> implements Serializable {
 
     /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
     public void execute(Callback<T> callback) {
-        execute(callback,true);
+        execute(callback, true);
     }
 
     /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
     public void execute(final Callback<T> callback, final boolean userToken) {
         HttpUtils.checkNotNull(callback, "callback == null");
-        if(!HttpUtils.isNetConnected()){
+        if (!HttpUtils.isNetConnected()) {
             callback.netWorkError("无网络");
-            return ;
+            return;
         }
         this.callback = callback;
         final Call<T> call = adapt();
-        if(!userToken||!WSONet.useToken){
+        if (!userToken || !WSONet.useToken) {
             call.execute(callback);
-        }else{
+        } else {
             IdentityProxy.getInstance().checkToken(new APIAccessCallBack() {
                 @Override
-                public void onAPIAccessReceive(String status, Token token) {
-                    if(token!=null){
-                        headers.put("Authorization", "Bearer "+token.getAccessToken());
+                public void onAPIAccessReceive(String status, int code, Token token) {
+                    if (token != null) {
+                        headers.put("Authorization", "Bearer " + token.getAccessToken());
+                    } else {
+                        WSONet.getInstance().loginExpireCallBack(String.valueOf(tag), code);
+                    }
+                    if (call != null && callback != null) {
+                        call.execute(callback);
                     }
                 }
-            },call,callback);
+            });
         }
     }
 }

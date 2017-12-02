@@ -7,6 +7,6 @@ import com.want.wso2.bean.Token;
  */
 
 public interface APIAccessCallBack {
-    void onAPIAccessReceive(String status,Token token);
+    void onAPIAccessReceive(String status,int code,Token token);
 }
 

@@ -1,6 +1,6 @@
 package com.want.wso2.bean;
 
-import com.want.wso2.utils.JsonTool;
+import com.want.wso2.utils.Convert;
 
 /**
  * Created by wisn on 2017/8/9.
@@ -9,7 +9,7 @@ import com.want.wso2.utils.JsonTool;
 public class Bean {
     public Fault fault;
     public String toJSON(){
-        return JsonTool.toJson(this);
+        return Convert.toJson(this);
     }
 
     @Override

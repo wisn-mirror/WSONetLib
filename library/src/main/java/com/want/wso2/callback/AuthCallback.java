@@ -12,19 +12,19 @@ import okhttp3.Response;
  * Created by wisn on 2017/8/22.
  */
 
-public abstract class TokenCallback<T> extends AbsCallback<T> {
+public abstract class AuthCallback<T> extends AbsCallback<T> {
 
     private Type type;
     private Class<T> clazz;
 
-    public TokenCallback() {
+    public AuthCallback() {
     }
 
-    public TokenCallback(Type type) {
+    public AuthCallback(Type type) {
         this.type = type;
     }
 
-    public TokenCallback(Class<T> clazz) {
+    public AuthCallback(Class<T> clazz) {
         this.clazz = clazz;
     }
 
@@ -48,6 +48,10 @@ public abstract class TokenCallback<T> extends AbsCallback<T> {
         JsonConvert<T> convert = new JsonConvert<>(type);
         return convert.convertResponse(response);
     }
+    /**
+     * 无网络错误
+     * @param msg
+     */
     public void netWorkError(String msg){
 
     }

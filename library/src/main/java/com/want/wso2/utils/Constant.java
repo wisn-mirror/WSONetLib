@@ -20,4 +20,7 @@ public class Constant {
     public final static String UserName = "userName";
     public final static String password = "password";
     public final static String scope = "scope";
+    public final static String Success = "Success";
+    public final static String Faile = "Success";
+
 }

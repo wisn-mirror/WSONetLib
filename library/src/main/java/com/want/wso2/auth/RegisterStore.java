@@ -60,6 +60,11 @@ public class RegisterStore {
         }
     }
 
+    public void changePassword(String newPassword){
+        SharedPreferences.Editor prefsWriter = mSharedPreferences.edit();
+        prefsWriter.putString(Constant.password, newPassword);
+        prefsWriter.apply();
+    }
 
     public void clearAll() {
         SharedPreferences.Editor prefsWriter = mSharedPreferences.edit();

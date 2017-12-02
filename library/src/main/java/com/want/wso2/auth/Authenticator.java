@@ -1,15 +1,13 @@
 package com.want.wso2.auth;
 
 import com.want.wso2.WSONet;
-import com.want.wso2.adapter.Call;
 import com.want.wso2.bean.Register;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.Token;
 import com.want.wso2.bean.TokenResponse;
-import com.want.wso2.callback.Callback;
+import com.want.wso2.callback.AuthCallback;
 import com.want.wso2.callback.JsonCallback;
-import com.want.wso2.callback.TokenCallback;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Response;
 import com.want.wso2.utils.Base64Utils;
@@ -18,6 +16,7 @@ import com.want.wso2.utils.Convert;
 import com.want.wso2.utils.TokenUtils;
 import com.want.wso2.utils.WSOLog;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -28,13 +27,14 @@ import java.util.Date;
  */
 
 public class Authenticator {
+    private static String TAG = "Authenticator";
     private static String[] SUBSCRIBED_API = new String[]{"android"};
     public final static String SCOPES = "default appm:read" +
                                         " perm:android:enroll perm:android:disenroll" +
                                         " perm:android:view-configuration perm:android:manage-configuration";
 
     /**
-     * 登录
+     * 认证
      *
      * @param registerUrl
      * @param tokenUrl
@@ -72,7 +72,17 @@ public class Authenticator {
 
     }
 
-    private static void registerByRefreshtokenExpire(String registerUrl,
+    /**
+     *
+     * @param registerUrl
+     * @param tokenUrl
+     * @param registrationProfileRequest
+     * @param userName
+     * @param password
+     * @param scope
+     * @param registerListener
+     */
+    protected static void registerByRefreshtokenExpire(String registerUrl,
                                                      final String tokenUrl,
                                                      String registrationProfileRequest,
                                                      final String userName,
@@ -86,7 +96,7 @@ public class Authenticator {
                 .headers("Content-Type", "application/json")
                 .headers("Accept", "application/json")
                 .headers("Authorization", basicAuthValue)
-                .execute(new TokenCallback<RegisterResponse>() {
+                .execute(new AuthCallback<RegisterResponse>() {
                     @Override
                     public void onSuccess(Response<RegisterResponse> response) {
                         if (response.isSuccessful()) {
@@ -103,17 +113,17 @@ public class Authenticator {
                                                        password,
                                                        scope, body, registerListener);
                             } else {
-                                registerListener.onFailure(" RegisterResponse is null ", response.code());
+                                registerListener.onFailure(response.message(), response.code());
                             }
                         } else {
-                            registerListener.onFailure("response is error ", response.code());
+                            registerListener.onFailure(response.message(), response.code());
                         }
                     }
 
                     @Override
                     public void onError(Response<RegisterResponse> response) {
                         super.onError(response);
-                        registerListener.onFailure("register error", response.code());
+                        registerListener.onFailure(response.message(), response.code());
                     }
 
                     @Override
@@ -124,12 +134,8 @@ public class Authenticator {
                 }, false);
     }
 
-    /**
-     * @param changePasswordUrl
-     * @param passwordJson           : { "oldPassword":"aa","newPassword":"ddd"}
-     * @param changePasswordCallBack
-     */
-    public static void changePassword(String changePasswordUrl, String passwordJson,
+
+    public static void changePassword(String changePasswordUrl, String oldPassword, final String newPassword,
                                       final ChangePasswordCallBack changePasswordCallBack) {
         Token token = IdentityProxy.getInstance().isLogin();
         if (token == null) {
@@ -139,61 +145,76 @@ public class Authenticator {
             }
             return;
         }
-        WSONet.<String>put(changePasswordUrl)
-                .upJson(passwordJson)
-                .execute(new JsonCallback<String>() {
-                    @Override
-                    public void onSuccess(Response<String> response) {
-                        if (response.isSuccessful() && response.code() == 200 && response.body() != null) {
-                            if (changePasswordCallBack != null) {
-                                changePasswordCallBack.onSuccess(response.code(), response.body());
-                            }
-                        } else {
-                            try {
-                                if (response.body() != null) {
-                                    JSONObject jsonObject = new JSONObject(response.body());
-                                    String message = (String) jsonObject.get("message");
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("oldPassword", oldPassword);
+            jsonObject.put("newPassword", newPassword);
+            WSONet.<String>put(changePasswordUrl)
+                    .upJson(jsonObject)
+                    .execute(new JsonCallback<String>() {
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            if (response.isSuccessful() &&
+                                response.code() == 200 &&
+                                response.body() != null) {
+                                if (changePasswordCallBack != null) {
+                                    changePasswordCallBack.onSuccess(response.code(), response.body());
+                                }
+                            } else {
+                                String message = null;
+                                try {
+                                    if (response.body() != null) {
+                                        JSONObject jsonObject = new JSONObject(response.body());
+                                        message = (String) jsonObject.get("message");
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
                                     if (changePasswordCallBack != null) {
                                         changePasswordCallBack.onError(response.code(), message);
                                     }
+                                    //更新新的密码，用于注册
+                                    RegisterStore
+                                            registerStore =
+                                            new RegisterStore(WSONet.getInstance().getContext());
+                                    registerStore.changePassword(newPassword);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            String message = null;
+                            try {
+                                if (response.body() != null) {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    message = (String) jsonObject.get("message");
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            } finally {
+                                if (changePasswordCallBack != null) {
+                                    changePasswordCallBack.onError(response.code(), message);
+                                }
                             }
                         }
-                    }
 
-                    @Override
-                    public void onError(Response<String> response) {
-                        super.onError(response);
-                        try {
-                            String message = null;
-                            if (response.body() != null) {
-                                JSONObject jsonObject = new JSONObject(response.body());
-                                message = (String) jsonObject.get("message");
-                            }
+                        @Override
+                        public void netWorkError(String msg) {
+                            super.netWorkError(msg);
                             if (changePasswordCallBack != null) {
-                                changePasswordCallBack.onError(response.code(), message);
-                                return;
+                                changePasswordCallBack.netWorkError(msg);
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
-                    }
-
-                    @Override
-                    public void netWorkError(String msg) {
-                        super.netWorkError(msg);
-                        if (changePasswordCallBack != null) {
-                            changePasswordCallBack.netWorkError(msg);
-                        }
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        super.onFinish();
-                    }
-                });
+                    });
+        } catch (JSONException e) {
+            e.printStackTrace();
+            if (changePasswordCallBack != null) {
+                changePasswordCallBack.onError(-1,
+                                               "Please make sure input password");
+            }
+        }
     }
 
     /**
@@ -221,7 +242,7 @@ public class Authenticator {
                 .headers("Accept", "*/*")
                 .headers("Authorization", "Bearer " + token.getAccessToken())
                 .headers("Content-Type", "application/json")
-                .execute(new TokenCallback<String>() {
+                .execute(new AuthCallback<String>() {
                     @Override
                     public void onSuccess(Response<String> response) {
                         WSOLog.d("loginOut", "onSuccess:" + response.body());
@@ -236,19 +257,13 @@ public class Authenticator {
                     @Override
                     public void onFinish() {
                         super.onFinish();
-                        clearPassword();
+                        clearData(true);
                     }
 
                     @Override
                     public void netWorkError(String msg) {
                         super.netWorkError(msg);
-                        clearPassword();
-                    }
-
-                    public void clearPassword() {
-                        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-                        tokenStore.clearAll();
-                        IdentityProxy.getInstance().clearToken();
+                        clearData(true);
                     }
 
                 }, false);
@@ -272,7 +287,7 @@ public class Authenticator {
                 .headers("Content-Type", "application/x-www-form-urlencoded")
                 .headers("Accept", "application/json")
                 .headers("Authorization", basicAuthValue)
-                .execute(new TokenCallback<TokenResponse>() {
+                .execute(new AuthCallback<TokenResponse>() {
                     @Override
                     public void onSuccess(Response<TokenResponse> response) {
                         tokenResponse(response, false);
@@ -282,12 +297,12 @@ public class Authenticator {
                                 if (body1 != null) {
                                     registerListener.onSuccess(body, body1, response.code());
                                 } else {
-                                    registerListener.onFailure("get token is failure", response.code());
+                                    registerListener.onFailure(response.message(), response.code());
                                 }
                             }
                         } else {
                             if (registerListener != null) {
-                                registerListener.onFailure("get token is failure", response.code());
+                                registerListener.onFailure(response.message(), response.code());
                             }
                         }
 
@@ -296,13 +311,21 @@ public class Authenticator {
                     @Override
                     public void onError(Response<TokenResponse> response) {
                         super.onError(response);
-                        IdentityProxy.getInstance().receiveAccessToken(500, "error", null);
+                        IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), null);
                     }
                 }, false);
     }
 
-    public void refreshToken(final Call call,
-                             final Callback callback,
+    /**
+     * 刷新token
+     *
+     * @param apiAccessCallBack
+     * @param url
+     * @param clientID
+     * @param clientSecret
+     * @param token
+     */
+    public void refreshToken(final APIAccessCallBack apiAccessCallBack,
                              String url,
                              String clientID,
                              String clientSecret,
@@ -318,18 +341,14 @@ public class Authenticator {
             WSONet.<TokenResponse>post(tokenUrl)
                     .headers("Content-Type", "application/x-www-form-urlencoded")
                     .headers("Authorization", basicAuthValue)
-                    .execute(new TokenCallback<TokenResponse>() {
+                    .execute(new AuthCallback<TokenResponse>() {
                         @Override
                         public void onSuccess(Response<TokenResponse> response) {
                             tokenResponse(response, true);
-                            if (call != null && callback != null) {
-                                call.execute(callback);
+                            if (apiAccessCallBack != null) {
+                                apiAccessCallBack.onAPIAccessReceive(Constant.Success,response.code(),
+                                                                     IdentityProxy.getInstance().getToken());
                             }
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            super.onFinish();
                         }
 
                         @Override
@@ -339,51 +358,63 @@ public class Authenticator {
                                     registerStore =
                                     new RegisterStore(WSONet.getInstance().getContext());
                             Register register = registerStore.getRegister();
-                            if (register != null) {
-                                registerByRefreshtokenExpire(register.registerUrl,
-                                                             register.tokenUrl,
-                                                             register.registrationProfileRequestjson,
-                                                             register.userName,
-                                                             register.password,
-                                                             register.scope,
-                                                             new RegisterListener() {
-                                                                 @Override
-                                                                 public void onSuccess(RegisterResponse response,
-                                                                                       TokenResponse tokenResponse,
-                                                                                       int code) {
-                                                                     if (call != null && callback != null) {
-                                                                         call.execute(callback);
-                                                                     }
-                                                                 }
-
-                                                                 @Override
-                                                                 public void onFailure(String resonseStr,
-                                                                                       int code) {
-                                                                     if (call != null && callback != null) {
-                                                                         call.execute(callback);
-                                                                     }
-                                                                 }
-
-                                                                 @Override
-                                                                 public void netWorkError(String msg) {
-                                                                     if (call != null && callback != null) {
-                                                                         call.execute(callback);
-                                                                     }
-                                                                     IdentityProxy.getInstance()
-                                                                                  .receiveAccessToken(500,
-                                                                                                      "error",
-                                                                                                      null);
-                                                                 }
-                                                             });
-                            } else {
-                                if (call != null && callback != null) {
-                                    call.execute(callback);
+                            if (register == null) {
+                                clearData(false);
+                                if (apiAccessCallBack != null) {
+                                    apiAccessCallBack.onAPIAccessReceive(Constant.Faile,response.code(),
+                                                                         IdentityProxy.getInstance()
+                                                                                      .getToken());
                                 }
+                                return;
                             }
+                            registerByRefreshtokenExpire(register.registerUrl,
+                                                         register.tokenUrl,
+                                                         register.registrationProfileRequestjson,
+                                                         register.userName,
+                                                         register.password,
+                                                         register.scope,
+                                                         new RegisterListener() {
+                                                             @Override
+                                                             public void onSuccess(RegisterResponse response,
+                                                                                   TokenResponse tokenResponse,
+                                                                                   int code) {
+                                                                 callBackExcute(code);
+                                                             }
+
+                                                             @Override
+                                                             public void onFailure(String resonseStr,
+                                                                                   int code) {
+                                                                 IdentityProxy.getInstance()
+                                                                              .receiveNewAccessToken(code,
+                                                                                                     resonseStr,
+                                                                                                     null);
+                                                                 callBackExcute(code);
+                                                             }
+
+                                                             @Override
+                                                             public void netWorkError(String msg) {
+                                                                 callBackExcute(-1);
+                                                             }
+
+                                                             public void callBackExcute(int code) {
+                                                                 if (apiAccessCallBack != null) {
+                                                                     apiAccessCallBack.onAPIAccessReceive(
+                                                                             Constant.Success,code,
+                                                                             IdentityProxy.getInstance()
+                                                                                          .getToken());
+                                                                 }
+                                                             }
+                                                         });
+
                         }
                     }, false);
         } catch (Exception e) {
             e.printStackTrace();
+            if (apiAccessCallBack != null) {
+                apiAccessCallBack.onAPIAccessReceive(Constant.Success,-1,
+                                                     IdentityProxy.getInstance()
+                                                                  .getToken());
+            }
         }
     }
 
@@ -396,22 +427,21 @@ public class Authenticator {
         if (response.isSuccessful() && response.code() == 200) {
             TokenResponse body = response.body();
             Token token = new Token();
-            String
-                    expireDate = TokenUtils.dateFormat.format(new Date().getTime() +
-                                                              (Integer.parseInt(body.getExpires_in()) *
-                                                               1000));
+            String expireDate = TokenUtils.dateFormat.format(new Date().getTime() +
+                                                             (Integer.parseInt(body.getExpires_in()) *
+                                                              1000));
             token.setDate(expireDate);
             token.setRefreshToken(body.getRefresh_token());
             token.setAccessToken(body.getAccess_token());
             token.setExpired(false);
             tokenStore.saveToken(token);
             if (isRefresh) {
-                IdentityProxy.getInstance().receiveAccessToken(200, "success", token);
+                IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), token);
             } else {
-                IdentityProxy.getInstance().receiveNewAccessToken(200, "success", token);
+                IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), token);
             }
         } else {
-            IdentityProxy.getInstance().receiveAccessToken(500, "error", null);
+            IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), null);
         }
     }
 
@@ -421,4 +451,22 @@ public class Authenticator {
         }
         return null;
     }
+
+    /**
+     * 清除身份认证相关的数据
+     *
+     * @param isClearRegister
+     */
+    public static void clearData(boolean isClearRegister) {
+        WSOLog.d(TAG, "clear all the token from memery and file ");
+        IdentityProxy.getInstance().clearToken();
+        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+        tokenStore.clearAll();
+        if (isClearRegister) {
+            WSOLog.d(TAG, "clear all the register info from file ");
+            RegisterStore registerStore = new RegisterStore(WSONet.getInstance().getContext());
+            registerStore.clearAll();
+        }
+    }
+
 }

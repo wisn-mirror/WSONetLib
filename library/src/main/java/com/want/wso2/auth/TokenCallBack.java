@@ -6,15 +6,7 @@ import com.want.wso2.bean.Token;
  * Created by wisn on 2017/8/24.
  */
 
-public interface AuthenticatorCallBack {
-    /**
-     * Get access token stored in the app preferences.
-     *
-     * @param status  - Status code.
-     * @param message - Success/Error message.
-     * @param token   - Token retrieved.
-     */
-    void receiveAccessToken(int status, String message, Token token);
+public interface TokenCallBack {
 
     /**
      * Get a new access token from the server.
