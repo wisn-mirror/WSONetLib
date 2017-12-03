@@ -55,13 +55,6 @@ public class Authenticator {
             registrationProfileRequest.setTags(SUBSCRIBED_API);
         }
         String registrationProfileRequestjson = Convert.toJson(registrationProfileRequest);
-        RegisterStore registerStore = new RegisterStore(WSONet.getInstance().getContext());
-        registerStore.saveRegister(new Register(registerUrl,
-                                                tokenUrl,
-                                                registrationProfileRequestjson,
-                                                userName,
-                                                password,
-                                                scope));
         registerByRefreshtokenExpire(registerUrl,
                                      tokenUrl,
                                      registrationProfileRequestjson,
@@ -82,13 +75,13 @@ public class Authenticator {
      * @param scope
      * @param registerListener
      */
-    protected static void registerByRefreshtokenExpire(String registerUrl,
-                                                     final String tokenUrl,
-                                                     String registrationProfileRequest,
-                                                     final String userName,
-                                                     final String password,
-                                                     final String scope,
-                                                     final RegisterListener registerListener) {
+    protected static void registerByRefreshtokenExpire(final String registerUrl,
+                                                       final String tokenUrl,
+                                                       final String registrationProfileRequest,
+                                                       final String userName,
+                                                       final String password,
+                                                       final String scope,
+                                                       final RegisterListener registerListener) {
         String basicAuthValue = "Basic " + base64(userName, password);
         WSONet.<RegisterResponse>post(registerUrl)
                 .upJson(registrationProfileRequest)
@@ -102,6 +95,13 @@ public class Authenticator {
                         if (response.isSuccessful()) {
                             RegisterResponse body = response.body();
                             if (body != null) {
+                                RegisterStore registerStore = new RegisterStore(WSONet.getInstance().getContext());
+                                registerStore.saveRegister(new Register(registerUrl,
+                                                                        tokenUrl,
+                                                                        registrationProfileRequest,
+                                                                        userName,
+                                                                        password,
+                                                                        scope));
                                 TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
                                 tokenStore.saveIdSecrect(body.getClient_id(), body.getClient_secret());
                                 tokenStore.saveTokenUrl(tokenUrl);
@@ -460,8 +460,6 @@ public class Authenticator {
     public static void clearData(boolean isClearRegister) {
         WSOLog.d(TAG, "clear all the token from memery and file ");
         IdentityProxy.getInstance().clearToken();
-        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-        tokenStore.clearAll();
         if (isClearRegister) {
             WSOLog.d(TAG, "clear all the register info from file ");
             RegisterStore registerStore = new RegisterStore(WSONet.getInstance().getContext());

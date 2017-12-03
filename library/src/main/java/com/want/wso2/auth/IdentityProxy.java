@@ -64,6 +64,8 @@ public class IdentityProxy implements TokenCallBack {
 
     public void clearToken() {
         token = null;
+        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+        tokenStore.clearAll();
     }
 
     /**
@@ -145,5 +147,6 @@ public class IdentityProxy implements TokenCallBack {
         if ((code == 200 || code == 201) || token != null) {
             IdentityProxy.token = token;
         }
+        // TODO: 2017/12/3  token ==null 激活重新注册策略
     }
 }
