@@ -19,11 +19,12 @@ public class TokenStore {
         mSharedPreferences = context.getSharedPreferences(Constant.Token_Store, Context.MODE_PRIVATE);
     }
 
-    public void saveToken(Token token) {
+    public synchronized void saveToken(Token token) {
         SharedPreferences.Editor prefsWriter = mSharedPreferences.edit();
         prefsWriter.putString(Constant.Token_Accesstoken, token.getAccessToken());
         prefsWriter.putString(Constant.Token_refreshtoken, token.getRefreshToken());
         prefsWriter.putString(Constant.Token_date, TokenUtils.dateFormat.format(token.getDate()));
+        prefsWriter.putString(Constant.idToken,token.getIdToken());
         prefsWriter.apply();
     }
 
@@ -77,6 +78,7 @@ public class TokenStore {
         prefsWriter.remove(Constant.Token_Accesstoken);
         prefsWriter.remove(Constant.Token_refreshtoken);
         prefsWriter.remove(Constant.Token_date);
+        prefsWriter.remove(Constant.idToken);
         prefsWriter.apply();
     }
 

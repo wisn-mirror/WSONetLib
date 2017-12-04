@@ -16,8 +16,6 @@ import android.widget.Toast;
 import com.want.wso2.WSONet;
 import com.want.wso2.auth.Authenticator;
 import com.want.wso2.auth.ChangePasswordCallBack;
-import com.want.wso2.auth.TokenStore;
-import com.want.wso2.bean.ChangePasswordResponse;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
@@ -28,21 +26,13 @@ import com.want.wso2.download.DownloadListener;
 import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Progress;
-import com.want.wso2.model.Response;
 import com.want.wso2.request.GetRequest;
 import com.want.wso2.utils.Constant;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import want.com.authtest.aaa.Configuration;
 import want.com.authtest.aaa.ConfigurationBean;
-import want.com.authtest.aaa.IndexPage;
-import want.com.authtest.aaa.PaiHang;
-import want.com.authtest.aaa.PaiHangResponse;
-import want.com.authtest.backup.Network;
-import want.com.authtest.bean.Password;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -50,22 +40,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public static final int GETTAG = 1;
     public static final int GETPREM = 2;
     private TextView mTestResult, getTAG, getPrem, register, getConfig, shareText,
-            shareTextdelete,changePassword,
+            shareTextdelete, changePassword,
             loginOut, getStatus;
-    private EditText url, userName, password,newpassword;
+    private EditText url, userName, password, newpassword;
     private Context context;
     private static String[] SUBSCRIBED_API = new String[]{"device_management"};
     private static String[] roles = new String[]{"admin"};
-   /* public final static String SCOPES = "default appm:read" +
-                                        " perm:android:enroll perm:android:disenroll" +
-                                        " perm:android:view-configuration perm:android:manage-configuration";
-   */
+    /* public final static String SCOPES = "default appm:read" +
+                                         " perm:android:enroll perm:android:disenroll" +
+                                         " perm:android:view-configuration perm:android:manage-configuration";
+    */
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
 //   public final static String SCOPES = "default perm:svm:view";
-   public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
+    public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,13 +90,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         changePassword.setOnClickListener(this);
         WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
             @Override
-            public void LoginExpire(String tag,int code) {
-                if("changepassword".equals(tag)){
+            public void LoginExpire(String tag, int code) {
+                if ("changepassword".equals(tag)) {
 
-                }else{
+                } else {
 
                 }
-                updateView("  重新登录  "+code, true);
+                updateView("  重新登录  " + code, true);
             }
         });
     }
@@ -113,10 +104,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        String Ip  = url.getText().toString();
+        String Ip = url.getText().toString();
         String strUserName = userName.getText().toString();
         String strPassword = password.getText().toString();
-        Log.e(TAG,strUserName+"  "+strPassword);
+        Log.e(TAG, strUserName + "  " + strPassword);
         if (view == register) {
             String applicationName =
                     Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
@@ -136,25 +127,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                    SCOPES,
                                    new RegisterListener() {
                                        @Override
-                                       public void onSuccess(RegisterResponse response, TokenResponse tokenResponse, int code) {
-                                           updateView("onSuccess:code:"+code +" "+ response.toJSON()+tokenResponse.toJSON(), true);
+                                       public void onSuccess(RegisterResponse response,
+                                                             TokenResponse tokenResponse,
+                                                             int code) {
+                                           updateView("onSuccess:code:" +
+                                                      code +
+                                                      " " +
+                                                      response.toJSON() +
+                                                      tokenResponse.toJSON(), true);
 
                                        }
 
                                        @Override
                                        public void onFailure(String resonseStr, int code) {
-                                           updateView("onFailure:code:"+code +" " + resonseStr, true);
+                                           updateView("onFailure:code:" + code + " " + resonseStr, true);
 
                                        }
+
                                        @Override
                                        public void netWorkError(String msg) {
-                                           updateView("netWorkError:"+msg, true);
+                                           updateView("netWorkError:" + msg, true);
                                        }
                                    });
         } else if (view == getConfig) {
             WSONet.<ConfigurationBean>get(
                     Ip + "/api/device-mgt/android/v1.0/configuration")
                     .execute(new JsonCallback<ConfigurationBean>() {
+                        /**
+                         * 请求成功，具体code在JsonCallback中定制
+                         * @param response
+                         */
                         @Override
                         public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
                             if (response.body().fault != null) {
@@ -165,73 +167,88 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             }
                         }
 
+                        /**
+                         * 请求错误，网络切换
+                         * @param response
+                         */
                         @Override
                         public void onError(com.want.wso2.model.Response<ConfigurationBean> response) {
                             super.onError(response);
                             updateView("onFailure:" + response.body(), true);
 
                         }
+
+                        /**
+                         * 无网络 在发起网络请求之前，检查网络，无网络回调
+                         * @param msg
+                         */
                         @Override
                         public void netWorkError(String msg) {
                             super.netWorkError(msg);
-                            updateView("netWorkError:"+msg, true);
+                            updateView("netWorkError:" + msg, true);
                         }
                     });
 
         } else if (view == loginOut) {
-            Authenticator.loginOut( Ip + "/api-application-registration/unregister",
+            Authenticator.loginOut(Ip + "/api-application-registration/unregister",
                                    com.want.wso2.utils.DeviceUtils.getDeviceId(this));
-        } else  if(view==changePassword){
+        } else if (view == changePassword) {
             Authenticator.changePassword(Ip + "/api/device-mgt/v1.0/users/credentials",
-                                         new Password(password.getText().toString(),
-                                                      newpassword.getText().toString()).toJSON(),
+                                         password.getText().toString(),
+                                         newpassword.getText().toString(),
                                          new ChangePasswordCallBack() {
                                              @Override
-                                             public void onSuccess(int code,String response) {
+                                             public void onSuccess(int code, String response) {
                                                  updateView("onSuccess:" + response, true);
 
                                              }
 
                                              @Override
-                                             public void onError(int code,String response) {
-                                                 updateView("onError:" + response+ code, true);
+                                             public void onError(int code, String response) {
+                                                 updateView("onError:" + response + code, true);
                                              }
 
                                              @Override
                                              public void netWorkError(String msg) {
-                                                 updateView("netWorkError:"+msg, true);
+                                                 updateView("netWorkError:" + msg, true);
                                              }
                                          });
 
-        }else if (view == getStatus) {
-            WSONet.<String>get(
-//                    Ip + "/api/svm/v1.0/supply/return/products")
-                    Ip + "/api/svm/v1.0/index/home")
-//                    .upJson("{a:'a',b:'b'}")
-                .tag("changepassword")
-                    .execute(new JsonCallback<String>() {
-                        @Override
-                        public void onSuccess(com.want.wso2.model.Response<String> response) {
-                            if (response.body() != null) {
-                                updateView("onSuccess:" + response.body().toString(), true);
-                            }
-//                            updateView("onSuccess:" + response.body().toString(), true);
+        } else if (view == getStatus) {
+           final String urls= Ip + "/api/svm/v1.0/index/home";
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 2; i++) {
+                        WSONet.<String>get(urls)
+                                .tag("changepassword")
+                                .execute(new JsonCallback<String>() {
+                                    @Override
+                                    public void onSuccess(com.want.wso2.model.Response<String> response) {
+                                        if (response.body() != null) {
+                                            updateView("onSuccess:" + response.body().toString(), true);
+                                        }
+                                        //                            updateView("onSuccess:" + response.body().toString(), true);
 
-                        }
+                                    }
 
-                        @Override
-                        public void onError(com.want.wso2.model.Response<String> response) {
-                            super.onError(response);
-                            updateView("onFailure:" + response.body(), true);
+                                    @Override
+                                    public void onError(com.want.wso2.model.Response<String> response) {
+                                        super.onError(response);
+                                        updateView("onFailure:" + response.body(), true);
 
-                        }
+                                    }
 
-                        @Override
-                        public void netWorkError(String msg) {
-                            super.netWorkError(msg);
-                            updateView("netWorkError:"+msg, true);
-                        }
-                    });
+                                    @Override
+                                    public void netWorkError(String msg) {
+                                        super.netWorkError(msg);
+                                        updateView("netWorkError:" + msg, true);
+                                    }
+                                });
+                    }
+                }
+            }).start();
+
 /*
             PaiHang paiHang = new PaiHang();
             paiHang.setUid("20");
@@ -340,40 +357,66 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         });
     }
-    public void download(){
+
+    public void download() {
         try {
-            Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+            Download.getInstance()
+                    .setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
             Download.getInstance().getThreadPool().setCorePoolSize(3);
             List<Progress> progressList = DownloadManager.getInstance().getAll();
             Download.restore(progressList);
             GetRequest<File>
-                    request = WSONet.<File>get("http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk").headers("aaa", "111").params("bbb", "222");
+                    request =
+                    WSONet.<File>get(
+                            "http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk")
+                            .headers("aaa", "111")
+                            .params("bbb", "222");
             Download.request("Tag", request)
                     .save()//
                     .register(new DownloadListener("Tag") {
                         @Override
                         public void onStart(Progress progress) {
-                            Log.d(TAG,"onStart  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            Log.d(TAG,
+                                  "onStart  currentSize:" +
+                                  progress.currentSize +
+                                  "totalSize:" +
+                                  progress.totalSize);
                         }
 
                         @Override
                         public void onProgress(Progress progress) {
-                            Log.d(TAG,"onProgress  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            Log.d(TAG,
+                                  "onProgress  currentSize:" +
+                                  progress.currentSize +
+                                  "totalSize:" +
+                                  progress.totalSize);
                         }
 
                         @Override
                         public void onError(Progress progress) {
-                            Log.d(TAG,"onError  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            Log.d(TAG,
+                                  "onError  currentSize:" +
+                                  progress.currentSize +
+                                  "totalSize:" +
+                                  progress.totalSize);
                         }
 
                         @Override
                         public void onFinish(File file, Progress progress) {
-                            Log.d(TAG,"onFinish  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            Log.d(TAG,
+                                  "onFinish  currentSize:" +
+                                  progress.currentSize +
+                                  "totalSize:" +
+                                  progress.totalSize);
                         }
 
                         @Override
                         public void onRemove(Progress progress) {
-                            Log.d(TAG,"onRemove  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
+                            Log.d(TAG,
+                                  "onRemove  currentSize:" +
+                                  progress.currentSize +
+                                  "totalSize:" +
+                                  progress.totalSize);
                         }
                     })
                     .start();

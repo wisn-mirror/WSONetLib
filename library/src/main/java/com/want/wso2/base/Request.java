@@ -23,6 +23,7 @@ import com.want.wso2.model.HttpHeaders;
 import com.want.wso2.model.HttpMethod;
 import com.want.wso2.model.HttpParams;
 import com.want.wso2.utils.HttpUtils;
+import com.want.wso2.utils.WSOLog;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -33,8 +34,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+
 public abstract class Request<T, R extends Request> implements Serializable {
     private static final long serialVersionUID = -7174118653689916252L;
+    private static final String TAG ="Request";
     protected String url;
     protected String baseUrl;
     protected transient OkHttpClient client;
@@ -389,6 +392,7 @@ public abstract class Request<T, R extends Request> implements Serializable {
                         headers.put("Authorization", "Bearer " + token.getAccessToken());
                     } else {
                         WSONet.getInstance().loginExpireCallBack(String.valueOf(tag), code);
+                        WSOLog.e(TAG,"token ==null please login code"+code+" tag"+tag);
                     }
                     if (call != null && callback != null) {
                         call.execute(callback);

@@ -9,6 +9,7 @@ public class TokenResponse extends Bean{
     private String refresh_token;
     private String scope;
     private String token_type;
+    private String id_token;
     private String expires_in;
 
     public String getAccess_token() {
@@ -49,6 +50,14 @@ public class TokenResponse extends Bean{
 
     public void setExpires_in(String expires_in) {
         this.expires_in = expires_in;
+    }
+
+    public String getId_token() {
+        return id_token;
+    }
+
+    public void setId_token(String id_token) {
+        this.id_token = id_token;
     }
 
     @Override

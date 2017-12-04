@@ -31,8 +31,9 @@ public class IdentityProxy implements TokenCallBack {
 
     public void checkToken(APIAccessCallBack apiAccessCallBack) {
         if (token == null) {
-            TokenStore TokenStore = new TokenStore(WSONet.getInstance().getContext());
-            this.token = TokenStore.getToken();
+            TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
+            this.token = tokenStore.getToken();
+            WSOLog.e(TAG,this.token.toString());
         }
         if (this.token == null) {
             tryRegister(apiAccessCallBack);

@@ -13,6 +13,7 @@ public class Constant {
     public final static String Token_Accesstoken = "Token_Accesstoken";
     public final static String Token_refreshtoken = "Token_refreshtoken";
     public final static String Token_date = "Token_date";
+    public final static String idToken = "idToken";
 
     public final static String Register_Store = "RegisterStore";
     public final static String RegisterUrl = "registerUrl";

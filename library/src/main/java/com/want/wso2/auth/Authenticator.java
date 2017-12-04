@@ -66,7 +66,6 @@ public class Authenticator {
     }
 
     /**
-     *
      * @param registerUrl
      * @param tokenUrl
      * @param registrationProfileRequest
@@ -92,10 +91,12 @@ public class Authenticator {
                 .execute(new AuthCallback<RegisterResponse>() {
                     @Override
                     public void onSuccess(Response<RegisterResponse> response) {
-                        if (response.isSuccessful()) {
+                        if (response.isSuccessful()&&(response.code()==201||response.code()==200)) {
                             RegisterResponse body = response.body();
                             if (body != null) {
-                                RegisterStore registerStore = new RegisterStore(WSONet.getInstance().getContext());
+                                RegisterStore
+                                        registerStore =
+                                        new RegisterStore(WSONet.getInstance().getContext());
                                 registerStore.saveRegister(new Register(registerUrl,
                                                                         tokenUrl,
                                                                         registrationProfileRequest,
@@ -123,7 +124,7 @@ public class Authenticator {
                     @Override
                     public void onError(Response<RegisterResponse> response) {
                         super.onError(response);
-                        registerListener.onFailure(response.message(), response.code());
+                        registerListener.onFailure(response.getException().toString(), response.code());
                     }
 
                     @Override
@@ -154,12 +155,15 @@ public class Authenticator {
                     .execute(new JsonCallback<String>() {
                         @Override
                         public void onSuccess(Response<String> response) {
-                            if (response.isSuccessful() &&
-                                response.code() == 200 &&
-                                response.body() != null) {
+                            if (response.isSuccessful()&&(response.code()==201||response.code()==200)) {
                                 if (changePasswordCallBack != null) {
                                     changePasswordCallBack.onSuccess(response.code(), response.body());
                                 }
+                                //更新新的密码，用于注册
+                                RegisterStore
+                                        registerStore =
+                                        new RegisterStore(WSONet.getInstance().getContext());
+                                registerStore.changePassword(newPassword);
                             } else {
                                 String message = null;
                                 try {
@@ -173,11 +177,6 @@ public class Authenticator {
                                     if (changePasswordCallBack != null) {
                                         changePasswordCallBack.onError(response.code(), message);
                                     }
-                                    //更新新的密码，用于注册
-                                    RegisterStore
-                                            registerStore =
-                                            new RegisterStore(WSONet.getInstance().getContext());
-                                    registerStore.changePassword(newPassword);
                                 }
                             }
                         }
@@ -290,8 +289,8 @@ public class Authenticator {
                 .execute(new AuthCallback<TokenResponse>() {
                     @Override
                     public void onSuccess(Response<TokenResponse> response) {
-                        tokenResponse(response, false);
-                        if (response.isSuccessful()) {
+                        if (response.isSuccessful()&&(response.code()==201||response.code()==200)) {
+                            tokenResponse(response, false);
                             if (registerListener != null) {
                                 TokenResponse body1 = response.body();
                                 if (body1 != null) {
@@ -311,7 +310,8 @@ public class Authenticator {
                     @Override
                     public void onError(Response<TokenResponse> response) {
                         super.onError(response);
-                        IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), null);
+                        IdentityProxy.getInstance()
+                                     .receiveNewAccessToken(response.code(), response.message(), null);
                     }
                 }, false);
     }
@@ -344,16 +344,25 @@ public class Authenticator {
                     .execute(new AuthCallback<TokenResponse>() {
                         @Override
                         public void onSuccess(Response<TokenResponse> response) {
-                            tokenResponse(response, true);
-                            if (apiAccessCallBack != null) {
-                                apiAccessCallBack.onAPIAccessReceive(Constant.Success,response.code(),
-                                                                     IdentityProxy.getInstance().getToken());
+                            if (response.isSuccessful()&&(response.code()==201||response.code()==200)) {
+                                tokenResponse(response, true);
+                                if (apiAccessCallBack != null) {
+                                    apiAccessCallBack.onAPIAccessReceive(Constant.Success, response.code(),
+                                                                         IdentityProxy.getInstance()
+                                                                                      .getToken());
+                                }
+                            } else {
+                                tryRegister(response);
                             }
                         }
 
                         @Override
                         public void onError(Response<TokenResponse> response) {
                             super.onError(response);
+                            tryRegister(response);
+                        }
+
+                        private void tryRegister(Response response) {
                             RegisterStore
                                     registerStore =
                                     new RegisterStore(WSONet.getInstance().getContext());
@@ -361,7 +370,7 @@ public class Authenticator {
                             if (register == null) {
                                 clearData(false);
                                 if (apiAccessCallBack != null) {
-                                    apiAccessCallBack.onAPIAccessReceive(Constant.Faile,response.code(),
+                                    apiAccessCallBack.onAPIAccessReceive(Constant.Faile, response.code(),
                                                                          IdentityProxy.getInstance()
                                                                                       .getToken());
                                 }
@@ -399,19 +408,18 @@ public class Authenticator {
                                                              public void callBackExcute(int code) {
                                                                  if (apiAccessCallBack != null) {
                                                                      apiAccessCallBack.onAPIAccessReceive(
-                                                                             Constant.Success,code,
+                                                                             Constant.Success, code,
                                                                              IdentityProxy.getInstance()
                                                                                           .getToken());
                                                                  }
                                                              }
                                                          });
-
                         }
                     }, false);
         } catch (Exception e) {
             e.printStackTrace();
             if (apiAccessCallBack != null) {
-                apiAccessCallBack.onAPIAccessReceive(Constant.Success,-1,
+                apiAccessCallBack.onAPIAccessReceive(Constant.Success, -1,
                                                      IdentityProxy.getInstance()
                                                                   .getToken());
             }
@@ -423,9 +431,10 @@ public class Authenticator {
      * @param response
      */
     public void tokenResponse(Response<TokenResponse> response, boolean isRefresh) {
-        TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
-        if (response.isSuccessful() && response.code() == 200) {
+        try{
             TokenResponse body = response.body();
+            if(body==null||body.getExpires_in()==null)return ;
+            TokenStore tokenStore = new TokenStore(WSONet.getInstance().getContext());
             Token token = new Token();
             String expireDate = TokenUtils.dateFormat.format(new Date().getTime() +
                                                              (Integer.parseInt(body.getExpires_in()) *
@@ -434,14 +443,16 @@ public class Authenticator {
             token.setRefreshToken(body.getRefresh_token());
             token.setAccessToken(body.getAccess_token());
             token.setExpired(false);
+            token.setIdToken(body.getId_token());
             tokenStore.saveToken(token);
+            WSOLog.d(TAG,"token :"+token.toString());
             if (isRefresh) {
                 IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), token);
             } else {
                 IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), token);
             }
-        } else {
-            IdentityProxy.getInstance().receiveNewAccessToken(response.code(), response.message(), null);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

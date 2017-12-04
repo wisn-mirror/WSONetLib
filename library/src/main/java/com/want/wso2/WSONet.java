@@ -23,6 +23,7 @@ import com.want.wso2.request.PutRequest;
 import com.want.wso2.request.TraceRequest;
 import com.want.wso2.utils.DeviceUtils;
 import com.want.wso2.utils.HttpUtils;
+import com.want.wso2.utils.WSOLog;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -30,11 +31,13 @@ import java.util.logging.Level;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
+
 /**
  * Created by wisn on 2017/8/22.
  */
 public class WSONet {
 
+    public static final String TAG = "WSONet";
     public static final long DEFAULT_MILLISECONDS = 15000;      //默认的超时时间
     public static long REFRESH_TIME = 300;                      //回调刷新时间（单位ms）
 
@@ -57,9 +60,10 @@ public class WSONet {
         this.loginExpireCallBack = loginExpireCallBack;
     }
 
-    public void loginExpireCallBack(String tag,int code) {
+    public void loginExpireCallBack(String tag, int code) {
+        WSOLog.e(TAG,"loginExpireCallBack tag:"+tag+" code:"+code);
         if (this.loginExpireCallBack != null) {
-            loginExpireCallBack.LoginExpire(tag,code);
+            loginExpireCallBack.LoginExpire(tag, code);
         }
     }
 
@@ -119,6 +123,19 @@ public class WSONet {
         context = app;
         addPublicData();
         return this;
+    }
+
+    /**
+     * 是否输出netlog
+     * @param TAG  指定log的tag
+     * @param isdebug 是否debug
+     */
+    public void isDebug(String TAG, boolean isdebug) {
+        if (TAG == null) {
+            WSOLog.debug(isdebug);
+        } else {
+            WSOLog.debug(TAG, isdebug);
+        }
     }
 
     /**

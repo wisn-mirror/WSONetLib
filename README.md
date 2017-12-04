@@ -1,13 +1,16 @@
 token sdk
 初始化在Application中：
 
+        //公共的header
         HttpHeaders headers = new HttpHeaders();
         headers.put("commonHeaderKey2", "commonHeaderValue2");
+        //公共的params
         HttpParams params = new HttpParams();
         params.put("commonParamsKey1", "commonParamsValue1");
         try {
             WSONet.getInstance()
                   .init(this)
+                  isDebug("WSONet",true)
                  .setCacheMode(CacheMode.NO_CACHE)
                 .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE)
                 .addCommonHeaders(headers)                                         //设置全局公共头
@@ -15,6 +18,47 @@ token sdk
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+ 请求使用例子：
+
+           WSONet.<ConfigurationBean>get(
+                              Ip + "/api/device-mgt/android/v1.0/configuration")
+                              .execute(new JsonCallback<ConfigurationBean>() {
+                                  /**
+                                   * 请求成功，具体code在JsonCallback中定制
+                                   * @param response
+                                   */
+                                  @Override
+                                  public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
+                                      if (response.body().fault != null) {
+                                          ConfigurationBean body = response.body();
+                                          updateView("onSuccess:" + response.body().fault.toString(), true);
+                                      } else {
+                                          updateView("onSuccess:" + response.body().toString(), true);
+                                      }
+                                  }
+
+                                  /**
+                                   * 请求错误，网络切换
+                                   * @param response
+                                   */
+                                  @Override
+                                  public void onError(com.want.wso2.model.Response<ConfigurationBean> response) {
+                                      super.onError(response);
+                                      updateView("onFailure:" + response.body(), true);
+
+                                  }
+
+                                  /**
+                                   * 无网络 在发起网络请求之前，检查网络，无网络回调
+                                   * @param msg
+                                   */
+                                  @Override
+                                  public void netWorkError(String msg) {
+                                      super.netWorkError(msg);
+                                      updateView("netWorkError:" + msg, true);
+                                  }
+                              });
 
 注册：
 
@@ -37,24 +81,7 @@ token sdk
                                 final String scope,
                                 final RegisterListener registerListener)
 
-  请求：
 
-                WSONet.<BaseNetBean<UserTResponse>>post("http://10.0.86.120:8080/WSS/app/test")
-                                                   .tag("tag")
-                                                   .upObjectToJson(user)
-                                                   .params("id",123432)
-                                                   .params("name","wisn")
-                                                   .params("password","nihao")
-                                                   .execute(new JsonCallback<BaseNetBean<UserTResponse>>() {
-                                                       @Override
-                                                       public void onSuccess(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
-                                                       }
-
-                                                       @Override
-                                                       public void onError(com.want.wso2.model.Response<BaseNetBean<UserTResponse>> response) {
-                                                           super.onError(response);
-                                                       }
-                                                   });
 //设置下载目录
 
             Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
