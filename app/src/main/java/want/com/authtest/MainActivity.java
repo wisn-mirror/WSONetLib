@@ -219,7 +219,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    for (int i = 0; i < 2; i++) {
+                    for (int i = 0; i < 10; i++) {
                         WSONet.<String>get(urls)
                                 .tag("changepassword")
                                 .execute(new JsonCallback<String>() {

@@ -82,7 +82,7 @@ token sdk
                                 final RegisterListener registerListener)
 
 
-//设置下载目录
+    设置下载目录
 
             Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
                 Download.getInstance().getThreadPool().setCorePoolSize(3);
@@ -118,3 +118,24 @@ token sdk
                             }
                         })
                         .start();
+
+
+混淆配置
+
+                -dontwarn okhttp3.**
+                -dontwarn okio.**
+                -dontwarn javax.annotation.**
+                # A resource is loaded with a relative path so the package of this class must be preserved.
+                -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+                # For using GSON @Expose annotation
+                -keepattributes *Annotation*
+
+                # Gson specific classes
+                -keep class sun.misc.Unsafe { *; }
+                -keep class com.google.gson.stream.** { *; }
+
+                # Application classes that will be serialized/deserialized over Gson
+                -keep class com.google.gson.examples.android.model.** { *; }
+
+                -keep class com.want.wso2.** { *; }
