@@ -110,7 +110,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Log.e(TAG, strUserName + "  " + strPassword);
         if (view == register) {
             String applicationName =
-                    Constant.API_APPLICATION_NAME_PREFIX + DeviceUtils.getDeviceName(context);
+                    "yunwang_android_"+ DeviceUtils.getDeviceName(context);
             RegistrationProfileRequest registrationProfileRequest = new RegistrationProfileRequest();
             registrationProfileRequest.setApplicationName(applicationName);
             registrationProfileRequest.setIsAllowedToAllDomains(false);

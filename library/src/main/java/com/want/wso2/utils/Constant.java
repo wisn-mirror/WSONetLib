@@ -5,7 +5,6 @@ package com.want.wso2.utils;
  */
 
 public class Constant {
-    public final static String API_APPLICATION_NAME_PREFIX = "yunwang_android_";
     public final static String Token_Store = "tokenStore";
     public final static String clientId = "clientId";
     public final static String tokenUrl = "tokenUrl";
@@ -22,6 +21,6 @@ public class Constant {
     public final static String password = "password";
     public final static String scope = "scope";
     public final static String Success = "Success";
-    public final static String Faile = "Success";
+    public final static String Failed = "Failed";
 
 }
