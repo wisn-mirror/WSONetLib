@@ -135,7 +135,13 @@ public class Authenticator {
                 }, false);
     }
 
-
+    /**
+     *
+     * @param changePasswordUrl
+     * @param oldPassword
+     * @param newPassword
+     * @param changePasswordCallBack
+     */
     public static void changePassword(String changePasswordUrl, String oldPassword, final String newPassword,
                                       final ChangePasswordCallBack changePasswordCallBack) {
         Token token = IdentityProxy.getInstance().isLogin();
@@ -228,15 +234,13 @@ public class Authenticator {
 
     /**
      * @param unRegisterUrl
-     * @param imei          手机的唯一串号
+     * @param applicationName          applicationName+手机的唯一串号
      */
-    public static void loginOut(String unRegisterUrl, String imei) {
+    public static void loginOut(String unRegisterUrl, String applicationName) {
         Token token = IdentityProxy.getInstance().getToken();
         if (token == null) return;
         WSONet.<String>delete(unRegisterUrl +
-                              "?applicationName=" +
-                              Constant.API_APPLICATION_NAME_PREFIX +
-                              imei)
+                              "?applicationName=" +applicationName)
                 .headers("User-Agent", "Mozilla/5.0 ( compatible ), Android")
                 .headers("Accept", "*/*")
                 .headers("Authorization", "Bearer " + token.getAccessToken())
@@ -268,6 +272,17 @@ public class Authenticator {
                 }, false);
     }
 
+    /**
+     *
+     * @param url
+     * @param clientId
+     * @param clientSecret
+     * @param userName
+     * @param passWord
+     * @param scope
+     * @param body
+     * @param registerListener
+     */
     public void getToken(String url,
                          String clientId,
                          String clientSecret,
@@ -428,7 +443,9 @@ public class Authenticator {
 
 
     /**
+     *
      * @param response
+     * @param isRefresh
      */
     public void tokenResponse(Response<TokenResponse> response, boolean isRefresh) {
         try{
