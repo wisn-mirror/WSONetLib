@@ -385,7 +385,7 @@ public class Authenticator {
                             if (register == null) {
                                 clearData(false);
                                 if (apiAccessCallBack != null) {
-                                    apiAccessCallBack.onAPIAccessReceive(Constant.Faile, response.code(),
+                                    apiAccessCallBack.onAPIAccessReceive(Constant.Failed, response.code(),
                                                                          IdentityProxy.getInstance()
                                                                                       .getToken());
                                 }
