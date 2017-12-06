@@ -1,4 +1,4 @@
-#WSNET
+# WSNET
 
 
 ## 支持的请求
@@ -14,7 +14,7 @@ id  | class |
 7| PutRequest    |
 8| TraceRequest  |
 
-##初始化在Application中：
+## 初始化在Application中：
 ```java
         //添加公共的header
         HttpHeaders headers = new HttpHeaders();
@@ -35,7 +35,7 @@ id  | class |
         }
 ```
 
-##身份过期回调：
+## 身份过期回调：
 
 ```java
         public interface LoginExpireCallBack {
@@ -47,7 +47,7 @@ id  | class |
             void LoginExpire(String tag,int code);
         }
 ```
-##身份过期回调使用：
+## 身份过期回调使用：
 
 ```java
     WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
@@ -59,11 +59,11 @@ id  | class |
          });
 ```
 
-##身份认证的简要流程图：
+## 身份认证的简要流程图：
 
 <img width="90%" height="100%" src="./img/WSNet.png" />
 
-##请求使用例子：
+## 求使用例子：
 
 ```java
            WSONet.<ConfigurationBean>get(
@@ -106,7 +106,7 @@ id  | class |
                               });
 ```
 
-##身份认证：
+## 身份认证：
 
 ```java
             /**
@@ -129,7 +129,7 @@ id  | class |
                                 final RegisterListener registerListener)
 ```
 
-##断点下载使用示例：
+## 断点下载使用示例：
 
 ```java
              //设置下载目录
@@ -198,7 +198,7 @@ id  | class |
                                 .start();
 ```
 
-##混淆配置
+## 混淆配置
 
                 -dontwarn okhttp3.**
                 -dontwarn okio.**
