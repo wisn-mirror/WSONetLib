@@ -123,14 +123,18 @@ id  | class |
 ## 断点下载使用示例：
 
 ```java
-             //设置下载目录
-                        Download.getInstance()
-                                .setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
-                        //自定义设置下载线程池
-                        Download.getInstance().getThreadPool().setCorePoolSize(3);
-                        //获取断点下载的进度
-                        List<Progress> progressList = DownloadManager.getInstance().getAll();
-                        Download.restore(progressList);
+                            //设置下载目录
+                             Download download = Download.getInstance();
+
+                             download.setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+                             //自定义设置下载线程池
+                             download.getThreadPool().setCorePoolSize(3);
+                             //获取断点下载的进度
+                             List<Progress> progressList = DownloadManager.getInstance().getAll();
+                             //加载所有没有下载完成的任务
+                             download.restore(progressList);
+                             //开始所有的下载任务
+                             download.startAll();
                         GetRequest<File>
                                 request =
                                 WSONet.<File>get(
@@ -187,6 +191,65 @@ id  | class |
                                     }
                                 })
                                 .start();
+```
+## 断点上传：
+
+```java
+
+                Upload uploadTask = Upload.getInstance();
+                uploadTask.getThreadPool().setCorePoolSize(3);
+                //拿到断点的历史记录开始
+                List<Progress> all = UploadManager.getInstance().getAll();
+                uploadTask.restore(all);
+                //开始所有的任务
+                uploadTask.startAll();
+                PostRequest<String> postRequest = WSONet.<String>post("url")//
+                                                                            .headers("aaa", "111")//
+                                                                            .params("bbb", "222")//
+                                                                            .params("fileKey",
+                                                                            new File("file path"))//
+                                                                            .converter(new StringConvert());
+
+                UploadTask<String> task = Upload.request("file path", postRequest)//
+                                               .priority(new Random().nextInt(100))//
+                                               .extra1("额外的")//
+                                               .save();//保存到任务中
+                /**
+                 * task注册上传监听
+                 */
+                task.register(new UploadListener<String>("TAG") {
+                    @Override
+                    public void onStart(Progress progress) {
+                    }
+                    @Override
+                    public void onProgress(Progress progress) {
+                    }
+                    @Override
+                    public void onError(Progress progress) {
+                    }
+                    @Override
+                    public void onFinish(String s, Progress progress) {
+                    }
+                    @Override
+                    public void onRemove(Progress progress) {
+                    }
+                });
+                //开始上传
+                task.start();
+                /**
+                 * 设置全局监听
+                 */
+                uploadTask.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
+                    @Override
+                    public void onAllTaskEnd() {
+
+                    }
+                });
+                /**
+                 * 移除所有任务
+                 */
+                Upload.getInstance().removeAll();
+
 ```
 
 ## 混淆配置

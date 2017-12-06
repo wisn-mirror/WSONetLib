@@ -20,17 +20,24 @@ import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
+import com.want.wso2.convert.StringConvert;
 import com.want.wso2.db.DownloadManager;
+import com.want.wso2.db.UploadManager;
 import com.want.wso2.download.Download;
 import com.want.wso2.download.DownloadListener;
+import com.want.wso2.download.Upload;
 import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Progress;
 import com.want.wso2.request.GetRequest;
-import com.want.wso2.utils.Constant;
+import com.want.wso2.request.PostRequest;
+import com.want.wso2.task.XExecutor;
+import com.want.wso2.upload.UploadListener;
+import com.want.wso2.upload.UploadTask;
 
 import java.io.File;
 import java.util.List;
+import java.util.Random;
 
 import want.com.authtest.aaa.ConfigurationBean;
 
@@ -53,7 +60,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
 //   public final static String SCOPES = "default perm:svm:view";
     public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
-    public final static String supplySCOPES = "default appm:read perm:supply:view perm:supply:add perm:supply:delete perm:supply:update";
+    public final static String
+            supplySCOPES =
+            "default appm:read perm:supply:view perm:supply:add perm:supply:delete perm:supply:update";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -111,7 +120,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Log.e(TAG, strUserName + "  " + strPassword);
         if (view == register) {
             String applicationName =
-                    "supply_android_"+ DeviceUtils.getDeviceName(context);
+                    "supply_android_" + DeviceUtils.getDeviceName(context);
             RegistrationProfileRequest registrationProfileRequest = new RegistrationProfileRequest();
             registrationProfileRequest.setApplicationName(applicationName);
             registrationProfileRequest.setIsAllowedToAllDomains(false);
@@ -193,7 +202,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         } else if (view == loginOut) {
             Authenticator.loginOut(Ip + "/api-application-registration/unregister",
-                                   "supply_android_"+com.want.wso2.utils.DeviceUtils.getDeviceId(this));
+                                   "supply_android_" + com.want.wso2.utils.DeviceUtils.getDeviceId(this));
         } else if (view == changePassword) {
             Authenticator.changePassword(Ip + "/api/device-mgt/v1.0/users/credentials",
                                          password.getText().toString(),
@@ -217,37 +226,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                          });
 
         } else if (view == getStatus) {
-            final String urls= Ip + "/api/svm/v1.0/supply/homepage";
+            final String urls = Ip + "/api/svm/v1.0/supply/homepage";
             new Thread(new Runnable() {
                 @Override
                 public void run() {
 //                    for (int i = 0; i < 10; i++) {
-                        WSONet.<String>get(urls)
-                                .tag("homepage")
-                                .params("factory_code","12456789")
-                                .execute(new JsonCallback<String>() {
-                                    @Override
-                                    public void onSuccess(com.want.wso2.model.Response<String> response) {
-                                        if (response.body() != null) {
-                                            updateView("onSuccess:" + response.body().toString(), true);
-                                        }
-                                        //                            updateView("onSuccess:" + response.body().toString(), true);
-
+                    WSONet.<String>get(urls)
+                            .tag("homepage")
+                            .params("factory_code", "12456789")
+                            .execute(new JsonCallback<String>() {
+                                @Override
+                                public void onSuccess(com.want.wso2.model.Response<String> response) {
+                                    if (response.body() != null) {
+                                        updateView("onSuccess:" + response.body().toString(), true);
                                     }
+                                    //                            updateView("onSuccess:" + response.body().toString(), true);
 
-                                    @Override
-                                    public void onError(com.want.wso2.model.Response<String> response) {
-                                        super.onError(response);
-                                        updateView("onFailure:" + response.body(), true);
+                                }
 
-                                    }
+                                @Override
+                                public void onError(com.want.wso2.model.Response<String> response) {
+                                    super.onError(response);
+                                    updateView("onFailure:" + response.body(), true);
 
-                                    @Override
-                                    public void netWorkError(String msg) {
-                                        super.netWorkError(msg);
-                                        updateView("netWorkError:" + msg, true);
-                                    }
-                                });
+                                }
+
+                                @Override
+                                public void netWorkError(String msg) {
+                                    super.netWorkError(msg);
+                                    updateView("netWorkError:" + msg, true);
+                                }
+                            });
 //                    }
                 }
             }).start();
@@ -396,14 +405,71 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     public void download() {
         try {
+            Upload uploadTask = Upload.getInstance();
+            uploadTask.getThreadPool().setCorePoolSize(3);
+            //拿到断点的历史记录开始
+            List<Progress> all = UploadManager.getInstance().getAll();
+            uploadTask.restore(all);
+            //开始所有的任务
+            uploadTask.startAll();
+            PostRequest<String> postRequest = WSONet.<String>post("url")//
+                                                                        .headers("aaa", "111")//
+                                                                        .params("bbb", "222")//
+                                                                        .params("fileKey",
+                                                                        new File("file path"))//
+                                                                        .converter(new StringConvert());
+
+            UploadTask<String> task = Upload.request("file path", postRequest)//
+                                           .priority(new Random().nextInt(100))//
+                                           .extra1("额外的")//
+                                           .save();//保存到任务中
+            /**
+             * task注册上传监听
+             */
+            task.register(new UploadListener<String>("TAG") {
+                @Override
+                public void onStart(Progress progress) {
+                }
+                @Override
+                public void onProgress(Progress progress) {
+                }
+                @Override
+                public void onError(Progress progress) {
+                }
+                @Override
+                public void onFinish(String s, Progress progress) {
+                }
+                @Override
+                public void onRemove(Progress progress) {
+                }
+            });
+            //开始上传
+            task.start();
+            /**
+             * 设置全局监听
+             */
+            uploadTask.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
+                @Override
+                public void onAllTaskEnd() {
+
+                }
+            });
+            /**
+             * 移除所有任务
+             */
+            Upload.getInstance().removeAll();
             //设置下载目录
-            Download.getInstance()
-                    .setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+            Download download = Download.getInstance();
+
+            download.setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
             //自定义设置下载线程池
-            Download.getInstance().getThreadPool().setCorePoolSize(3);
+            download.getThreadPool().setCorePoolSize(3);
             //获取断点下载的进度
             List<Progress> progressList = DownloadManager.getInstance().getAll();
-            Download.restore(progressList);
+            //加载所有没有下载完成的任务
+            download.restore(progressList);
+            //开始所有的下载任务
+            download.startAll();
             GetRequest<File>
                     request =
                     WSONet.<File>get(
@@ -486,6 +552,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     public void toast(final String message) {
+
        /* WSONet.<ConfigurationBean>post("")
                 .tag("")
                 .execute(new JsonCallback<ConfigurationBean>() {
