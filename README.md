@@ -35,7 +35,7 @@ id  | class |
         }
 ```
 
-## 身份过期回调：
+## 身份过期回调接口：
 
 ```java
         public interface LoginExpireCallBack {
@@ -53,8 +53,7 @@ id  | class |
     WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
              @Override
              public void LoginExpire(String tag, int code) {
-
-
+                   //身份过期 可以根据 tag和code 区分请求
              }
          });
 ```
@@ -75,22 +74,15 @@ id  | class |
                                    */
                                   @Override
                                   public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
-                                      if (response.body().fault != null) {
-                                          ConfigurationBean body = response.body();
-                                          updateView("onSuccess:" + response.body().fault.toString(), true);
-                                      } else {
-                                          updateView("onSuccess:" + response.body().toString(), true);
-                                      }
+
                                   }
 
                                   /**
-                                   * 请求错误，网络切换
+                                   * 请求错误
                                    * @param response
                                    */
                                   @Override
                                   public void onError(com.want.wso2.model.Response<ConfigurationBean> response) {
-                                      super.onError(response);
-                                      updateView("onFailure:" + response.body(), true);
 
                                   }
 
@@ -100,8 +92,7 @@ id  | class |
                                    */
                                   @Override
                                   public void netWorkError(String msg) {
-                                      super.netWorkError(msg);
-                                      updateView("netWorkError:" + msg, true);
+
                                   }
                               });
 ```
