@@ -1,10 +1,25 @@
-token sdk
-初始化在Application中：
+#WSNET
 
-        //公共的header
+
+## 支持的请求
+
+id  | class |
+----------|-------------|
+1| DeleteRequest |
+2| GetRequest    |
+3| HeadRequest   |
+4| OptionsRequest|
+5| PatchRequest  |
+6| PostRequest   |
+7| PutRequest    |
+8| TraceRequest  |
+
+##初始化在Application中：
+```java
+        //添加公共的header
         HttpHeaders headers = new HttpHeaders();
         headers.put("commonHeaderKey2", "commonHeaderValue2");
-        //公共的params
+        //添加公共的params（可选）
         HttpParams params = new HttpParams();
         params.put("commonParamsKey1", "commonParamsValue1");
         try {
@@ -18,9 +33,39 @@ token sdk
         } catch (Exception e) {
             e.printStackTrace();
         }
+```
 
- 请求使用例子：
+##身份过期回调：
 
+```java
+        public interface LoginExpireCallBack {
+            /**
+             * 全局身份过期回调
+             * @param tag 每个请求的tag ,可以通过tag可以区分哪个请求
+             * @param code 每个请求回调的code  当请求前检查token==null时code=-1,请求后拦截请求会返回对应的code,403/401
+             */
+            void LoginExpire(String tag,int code);
+        }
+```
+##身份过期回调使用：
+
+```java
+    WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
+             @Override
+             public void LoginExpire(String tag, int code) {
+
+
+             }
+         });
+```
+
+##身份认证的简要流程图：
+
+<img width="90%" height="100%" src="./img/WSNet.png" />
+
+##请求使用例子：
+
+```java
            WSONet.<ConfigurationBean>get(
                               Ip + "/api/device-mgt/android/v1.0/configuration")
                               .execute(new JsonCallback<ConfigurationBean>() {
@@ -59,9 +104,11 @@ token sdk
                                       updateView("netWorkError:" + msg, true);
                                   }
                               });
+```
 
-注册：
+##身份认证：
 
+```java
             /**
              *
              *
@@ -80,47 +127,78 @@ token sdk
                                 final String password,
                                 final String scope,
                                 final RegisterListener registerListener)
+```
 
+##断点下载使用示例：
 
-    设置下载目录
+```java
+             //设置下载目录
+                        Download.getInstance()
+                                .setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+                        //自定义设置下载线程池
+                        Download.getInstance().getThreadPool().setCorePoolSize(3);
+                        //获取断点下载的进度
+                        List<Progress> progressList = DownloadManager.getInstance().getAll();
+                        Download.restore(progressList);
+                        GetRequest<File>
+                                request =
+                                WSONet.<File>get(
+                                        "http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk")
+                                        .headers("aaa", "111")
+                                        .params("bbb", "222");
+                        Download.request("Tag", request)
+                                .save()
+                                .register(new DownloadListener("Tag") {
+                                    /**
+                                     * 开始下载监听
+                                     * @param progress
+                                     */
+                                    @Override
+                                    public void onStart(Progress progress) {
 
-            Download.getInstance().setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
-                Download.getInstance().getThreadPool().setCorePoolSize(3);
-                List<Progress> progressList = DownloadManager.getInstance().getAll();
-                Download.restore(progressList);
-                GetRequest<File> request = WSONet.<File>get("http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk").headers("aaa", "111").params("bbb", "222");
-                Download.request("Tag", request)
-                        .save()//
-                        .register(new DownloadListener("Tag") {
-                            @Override
-                            public void onStart(Progress progress) {
-                                Log.d(TAG,"onStart  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
-                            }
+                                    }
 
-                            @Override
-                            public void onProgress(Progress progress) {
-                                Log.d(TAG,"onProgress  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
-                            }
+                                    /**
+                                     * 下载进度监听
+                                     * @param progress
+                                     */
+                                    @Override
+                                    public void onProgress(Progress progress) {
 
-                            @Override
-                            public void onError(Progress progress) {
-                                Log.d(TAG,"onError  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
-                            }
+                                    }
 
-                            @Override
-                            public void onFinish(File file, Progress progress) {
-                                Log.d(TAG,"onFinish  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
-                            }
+                                    /**
+                                     * 下载错误监听
+                                     * @param progress
+                                     */
+                                    @Override
+                                    public void onError(Progress progress) {
 
-                            @Override
-                            public void onRemove(Progress progress) {
-                                Log.d(TAG,"onRemove  currentSize:"+progress.currentSize +"totalSize:"+progress.totalSize);
-                            }
-                        })
-                        .start();
+                                    }
 
+                                    /**
+                                     * 下载完成监听
+                                     * @param file
+                                     * @param progress
+                                     */
+                                    @Override
+                                    public void onFinish(File file, Progress progress) {
 
-混淆配置
+                                    }
+
+                                    /**
+                                     * 移除下载监听
+                                     * @param progress
+                                     */
+                                    @Override
+                                    public void onRemove(Progress progress) {
+
+                                    }
+                                })
+                                .start();
+```
+
+##混淆配置
 
                 -dontwarn okhttp3.**
                 -dontwarn okio.**

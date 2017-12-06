@@ -53,6 +53,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //   public final static String SCOPES = "default perm:machinerank:machinerank perm:machinerank:view";
 //   public final static String SCOPES = "default perm:svm:view";
     public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
+    public final static String supplySCOPES = "default appm:read perm:supply:view perm:supply:add perm:supply:delete perm:supply:update";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -110,7 +111,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Log.e(TAG, strUserName + "  " + strPassword);
         if (view == register) {
             String applicationName =
-                    "yunwang_android_"+ DeviceUtils.getDeviceName(context);
+                    "supply_android_"+ DeviceUtils.getDeviceName(context);
             RegistrationProfileRequest registrationProfileRequest = new RegistrationProfileRequest();
             registrationProfileRequest.setApplicationName(applicationName);
             registrationProfileRequest.setIsAllowedToAllDomains(false);
@@ -124,7 +125,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                    registrationProfileRequest,
                                    strUserName,
                                    strPassword,
-                                   SCOPES,
+                                   supplySCOPES,
                                    new RegisterListener() {
                                        @Override
                                        public void onSuccess(RegisterResponse response,
@@ -135,6 +136,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                                       " " +
                                                       response.toJSON() +
                                                       tokenResponse.toJSON(), true);
+                                           tokenResponse.getScope();
 
                                        }
 
@@ -191,7 +193,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         } else if (view == loginOut) {
             Authenticator.loginOut(Ip + "/api-application-registration/unregister",
-                                   com.want.wso2.utils.DeviceUtils.getDeviceId(this));
+                                   "supply_android_"+com.want.wso2.utils.DeviceUtils.getDeviceId(this));
         } else if (view == changePassword) {
             Authenticator.changePassword(Ip + "/api/device-mgt/v1.0/users/credentials",
                                          password.getText().toString(),
@@ -215,7 +217,41 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                          });
 
         } else if (view == getStatus) {
-           final String urls= Ip + "/api/svm/v1.0/index/home";
+            final String urls= Ip + "/api/svm/v1.0/supply/homepage";
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+//                    for (int i = 0; i < 10; i++) {
+                        WSONet.<String>get(urls)
+                                .tag("homepage")
+                                .params("factory_code","12456789")
+                                .execute(new JsonCallback<String>() {
+                                    @Override
+                                    public void onSuccess(com.want.wso2.model.Response<String> response) {
+                                        if (response.body() != null) {
+                                            updateView("onSuccess:" + response.body().toString(), true);
+                                        }
+                                        //                            updateView("onSuccess:" + response.body().toString(), true);
+
+                                    }
+
+                                    @Override
+                                    public void onError(com.want.wso2.model.Response<String> response) {
+                                        super.onError(response);
+                                        updateView("onFailure:" + response.body(), true);
+
+                                    }
+
+                                    @Override
+                                    public void netWorkError(String msg) {
+                                        super.netWorkError(msg);
+                                        updateView("netWorkError:" + msg, true);
+                                    }
+                                });
+//                    }
+                }
+            }).start();
+           /*final String urls= Ip + "/api/svm/v1.0/index/home";
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -247,7 +283,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                 });
                     }
                 }
-            }).start();
+            }).start();*/
 
 /*
             PaiHang paiHang = new PaiHang();
@@ -360,9 +396,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     public void download() {
         try {
+            //设置下载目录
             Download.getInstance()
                     .setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
+            //自定义设置下载线程池
             Download.getInstance().getThreadPool().setCorePoolSize(3);
+            //获取断点下载的进度
             List<Progress> progressList = DownloadManager.getInstance().getAll();
             Download.restore(progressList);
             GetRequest<File>
@@ -372,8 +411,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             .headers("aaa", "111")
                             .params("bbb", "222");
             Download.request("Tag", request)
-                    .save()//
+                    .save()
                     .register(new DownloadListener("Tag") {
+                        /**
+                         * 开始下载监听
+                         * @param progress
+                         */
                         @Override
                         public void onStart(Progress progress) {
                             Log.d(TAG,
@@ -383,6 +426,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                   progress.totalSize);
                         }
 
+                        /**
+                         * 下载进度监听
+                         * @param progress
+                         */
                         @Override
                         public void onProgress(Progress progress) {
                             Log.d(TAG,
@@ -392,6 +439,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                   progress.totalSize);
                         }
 
+                        /**
+                         * 下载错误监听
+                         * @param progress
+                         */
                         @Override
                         public void onError(Progress progress) {
                             Log.d(TAG,
@@ -401,6 +452,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                   progress.totalSize);
                         }
 
+                        /**
+                         * 下载完成监听
+                         * @param file
+                         * @param progress
+                         */
                         @Override
                         public void onFinish(File file, Progress progress) {
                             Log.d(TAG,
@@ -410,6 +466,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                   progress.totalSize);
                         }
 
+                        /**
+                         * 移除下载监听
+                         * @param progress
+                         */
                         @Override
                         public void onRemove(Progress progress) {
                             Log.d(TAG,
