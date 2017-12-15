@@ -88,11 +88,15 @@ public class DeviceUtils {
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager != null) {
             deviceId = telephonyManager.getDeviceId();
-            if (!TextUtils.isEmpty(deviceId)) {
-                deviceId = deviceId.trim();
-                Pattern p = Pattern.compile("IMEI", Pattern.CASE_INSENSITIVE);
-                Matcher m = p.matcher(deviceId);
-                deviceId = m.replaceAll(" ").replace(":", " ");
+            if(!TextUtils.isEmpty(deviceId)){
+                deviceId=deviceId.toLowerCase();
+                deviceId = deviceId.replace("imei", "");
+                if(!TextUtils.isEmpty(deviceId)){
+                    deviceId = deviceId.replace(":", "");
+                    if(!TextUtils.isEmpty(deviceId)){
+                        return deviceId.trim();
+                    }
+                }
             }
         }
         return deviceId;

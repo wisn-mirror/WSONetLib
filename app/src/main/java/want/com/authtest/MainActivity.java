@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.want.wso2.download.Upload;
 import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
 import com.want.wso2.model.Progress;
+import com.want.wso2.model.Response;
 import com.want.wso2.request.GetRequest;
 import com.want.wso2.request.PostRequest;
 import com.want.wso2.task.XExecutor;
@@ -61,8 +64,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //   public final static String SCOPES = "default perm:svm:view";
     public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
     public final static String
-            supplySCOPES =
-            "default appm:read perm:supply:view perm:supply:add perm:supply:delete perm:supply:update";
+            supplySCOPES ="perm:supply:view perm:supply:add perm:supply:delete perm:supply:update" +
+            "perm:inventory:add perm:inventory:delete perm:inventory:update perm:inventory:view ";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
@@ -161,42 +164,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                        }
                                    });
         } else if (view == getConfig) {
-            WSONet.<ConfigurationBean>get(
-                    Ip + "/api/device-mgt/android/v1.0/configuration")
-                    .execute(new JsonCallback<ConfigurationBean>() {
-                        /**
-                         * 请求成功，具体code在JsonCallback中定制
-                         * @param response
-                         */
+            WSONet.<String> get(Ip+"/api/machine/v1.0/settings")
+                    .params("machineId",1)
+                    .execute(new JsonCallback<String>() {
                         @Override
-                        public void onSuccess(com.want.wso2.model.Response<ConfigurationBean> response) {
-                            if (response.body().fault != null) {
-                                ConfigurationBean body = response.body();
-                                updateView("onSuccess:" + response.body().fault.toString(), true);
-                            } else {
-                                updateView("onSuccess:" + response.body().toString(), true);
-                            }
+                        public void onSuccess(Response<String> response) {
+                            Log.d(TAG, "onSuccess: 获取配置参数成功.");
                         }
 
-                        /**
-                         * 请求错误，网络切换
-                         * @param response
-                         */
                         @Override
-                        public void onError(com.want.wso2.model.Response<ConfigurationBean> response) {
+                        public void onError(Response<String> response) {
                             super.onError(response);
-                            updateView("onFailure:" + response.body(), true);
+                            Log.d(TAG, "onError: 获取配置参数失败...");
 
-                        }
-
-                        /**
-                         * 无网络 在发起网络请求之前，检查网络，无网络回调
-                         * @param msg
-                         */
-                        @Override
-                        public void netWorkError(String msg) {
-                            super.netWorkError(msg);
-                            updateView("netWorkError:" + msg, true);
                         }
                     });
 
@@ -226,139 +206,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                          });
 
         } else if (view == getStatus) {
-            final String urls = Ip + "/api/svm/v1.0/supply/homepage";
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                    for (int i = 0; i < 10; i++) {
-                    WSONet.<String>get(urls)
-                            .tag("homepage")
-                            .params("factory_code", "12456789")
-                            .execute(new JsonCallback<String>() {
-                                @Override
-                                public void onSuccess(com.want.wso2.model.Response<String> response) {
-                                    if (response.body() != null) {
-                                        updateView("onSuccess:" + response.body().toString(), true);
-                                    }
-                                    //                            updateView("onSuccess:" + response.body().toString(), true);
-
-                                }
-
-                                @Override
-                                public void onError(com.want.wso2.model.Response<String> response) {
-                                    super.onError(response);
-                                    updateView("onFailure:" + response.body(), true);
-
-                                }
-
-                                @Override
-                                public void netWorkError(String msg) {
-                                    super.netWorkError(msg);
-                                    updateView("netWorkError:" + msg, true);
-                                }
-                            });
-//                    }
-                }
-            }).start();
-           /*final String urls= Ip + "/api/svm/v1.0/index/home";
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 10; i++) {
-                        WSONet.<String>get(urls)
-                                .tag("changepassword")
-                                .execute(new JsonCallback<String>() {
-                                    @Override
-                                    public void onSuccess(com.want.wso2.model.Response<String> response) {
-                                        if (response.body() != null) {
-                                            updateView("onSuccess:" + response.body().toString(), true);
-                                        }
-                                        //                            updateView("onSuccess:" + response.body().toString(), true);
-
-                                    }
-
-                                    @Override
-                                    public void onError(com.want.wso2.model.Response<String> response) {
-                                        super.onError(response);
-                                        updateView("onFailure:" + response.body(), true);
-
-                                    }
-
-                                    @Override
-                                    public void netWorkError(String msg) {
-                                        super.netWorkError(msg);
-                                        updateView("netWorkError:" + msg, true);
-                                    }
-                                });
-                    }
-                }
-            }).start();*/
-
-/*
-            PaiHang paiHang = new PaiHang();
-            paiHang.setUid("20");
-            paiHang.setPage(1);
-            paiHang.setRoleid("1");
-            paiHang.setDateType("month");
-            List<String> time = new ArrayList<String>();
-            time.add("2017-02");
-            paiHang.setTimes(time);
-            WSONet.<PaiHangResponse>post(
-                    Ip + "/api/yunwang/v1.0/machinerank/machinerank")
-                    .upObjectToJson(paiHang)
-                    .execute(new JsonCallback<PaiHangResponse>() {
-                        @Override
-                        public void onSuccess(com.want.wso2.model.Response<PaiHangResponse> response) {
-                            if (response.body().fault != null) {
-                                updateView("onSuccess:" + response.body().fault.toString(), true);
-                            }
-                            updateView("onSuccess:" + response.body().toString(), true);
-
-                        }
-
-                        @Override
-                        public void onError(com.want.wso2.model.Response<PaiHangResponse> response) {
-                            super.onError(response);
-                            updateView("onFailure:" + response.body(), true);
-
-                        }
-                    });*/
-
+            testDetails(Ip);
         } else if (view == mUsers) {
             updateView("isLogin:" + Authenticator.isLogin(), true);
-
-            /*WSONet.<IndexPage>post(
-                    Ip + "/api/yunwang/v1.0/machinerank/indexpage")
-                    .upJson("{\"uid\":\"20\",\"roleid\":1}")
-                    .execute(new JsonCallback<IndexPage>() {
-                        @Override
-                        public void onSuccess(com.want.wso2.model.Response<IndexPage> response) {
-                            if (response.body().fault != null) {
-                                updateView("onSuccess:" + response.body().fault.toString(), true);
-                            }
-                            updateView("onSuccess:" + response.body().toString(), true);
-
-                        }
-
-                        @Override
-                        public void onError(com.want.wso2.model.Response<IndexPage> response) {
-                            super.onError(response);
-                            updateView("onFailure:" + response.body(), true);
-
-                        }
-                    });*/
-
         } else if (view == shareText) {
             download();
-            /*String result = mTestResult.getText().toString();
-            if (!TextUtils.isEmpty(result)) {
-                Intent intent1 = new Intent(Intent.ACTION_SEND);
-                intent1.putExtra(Intent.EXTRA_TEXT, result);
-                intent1.setType("text/plain");
-                startActivity(Intent.createChooser(intent1, "share"));
-            } else {
-                toast("结果为空！");
-            }*/
+
         } else if (view == shareTextdelete) {
             mTestResult.setText("");
         } else if (view == getTAG) {
@@ -388,6 +241,43 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         }
     }
+
+    public void testDetails(final String ip){
+        WSONet.<String>get(ip+"/api/supply/v1.0/supply/details")
+                .tag("homepage")
+                .params("factory_code", "93007736")
+                .execute(new JsonCallback<String>() {
+                    @Override
+                    public void onSuccess(com.want.wso2.model.Response<String> response) {
+                        if (response.body() != null) {
+                            updateView("onSuccess:" + response.body().toString(), true);
+                        }
+                        //                            updateView("onSuccess:" + response.body().toString(), true);
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                testDetails(ip);
+                            }
+                        },200);
+
+                    }
+
+                    @Override
+                    public void onError(com.want.wso2.model.Response<String> response) {
+                        super.onError(response);
+                        updateView("onFailure:" + response.body(), true);
+                        testDetails(ip);
+                    }
+
+                    @Override
+                    public void netWorkError(String msg) {
+                        super.netWorkError(msg);
+                        updateView("netWorkError:" + msg, true);
+                    }
+                });
+    }
+
+
 
     public void updateView(final String msg, final boolean isAppend) {
         runOnUiThread(new Runnable() {
