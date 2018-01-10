@@ -19,7 +19,10 @@ import com.want.wso2.utils.WSOLog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Date;
+
+import okhttp3.ResponseBody;
 
 
 /**
@@ -117,6 +120,7 @@ public class Authenticator {
                                 registerListener.onFailure(response.message(), response.code());
                             }
                         } else {
+
                             registerListener.onFailure(response.message(), response.code());
                         }
                     }
@@ -124,7 +128,21 @@ public class Authenticator {
                     @Override
                     public void onError(Response<RegisterResponse> response) {
                         super.onError(response);
-                        registerListener.onFailure(response.getException().toString(), response.code());
+                        if(response!=null&&response.getRawResponse()!=null){
+                            ResponseBody body = response.getRawResponse().body();
+                            if(body!=null){
+                                try {
+                                    byte[] bytes = body.bytes();
+                                    registerListener.onFailure(new String(bytes), response.code());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }else{
+                                registerListener.onFailure(response.getException().toString(), response.code());
+                            }
+                        }else{
+                            registerListener.onFailure(response.getException().toString(), response.code());
+                        }
                     }
 
                     @Override

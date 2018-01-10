@@ -1,8 +1,10 @@
 package want.com.authtest;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -69,6 +71,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
+//    private String downloadUrl="http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk";
+    private String downloadUrl="https://nodejs.org/dist/v8.9.3/node-v8.9.3.pkg";
+    private long mDownloadid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +106,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         loginOut.setOnClickListener(this);
         getStatus.setOnClickListener(this);
         changePassword.setOnClickListener(this);
+        IntentFilter filter = new IntentFilter(
+                android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        this.registerReceiver(downloadReceiver, filter);
         WSONet.getInstance().setLoginExpireCallBack(new LoginExpireCallBack() {
             @Override
             public void LoginExpire(String tag, int code) {
@@ -114,6 +122,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        IntentFilter filter = new IntentFilter(
+                android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        this.registerReceiver(downloadReceiver, filter);
+        super.onDestroy();
+    }
+
+    private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            long referenceId = intent.getLongExtra(
+                    android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            Log.d(TAG," downloadReceiver  downloadReceiver:"+referenceId);
+        }
+    };
 
     @Override
     public void onClick(View view) {
@@ -153,8 +177,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                        }
 
                                        @Override
-                                       public void onFailure(String resonseStr, int code) {
-                                           updateView("onFailure:code:" + code + " " + resonseStr, true);
+                                       public void onFailure(String message, int code) {
+                                           updateView("onFailure:code:" + code + " " + message, true);
 
                                        }
 
@@ -164,7 +188,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                        }
                                    });
         } else if (view == getConfig) {
-            WSONet.<String> get(Ip+"/api/machine/v1.0/settings")
+            /*WSONet.<String> get(Ip+"/api/machine/v1.0/settings")
                     .params("machineId",1)
                     .execute(new JsonCallback<String>() {
                         @Override
@@ -178,7 +202,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             Log.d(TAG, "onError: 获取配置参数失败...");
 
                         }
-                    });
+                    });*/
+
+            mDownloadid =
+                    DownloadManagerTest.startDownload(this.getApplicationContext(), downloadUrl, "aaa.apk");
+            Log.d(TAG, "   DownloadManagerTest.startDownload:" + mDownloadid);
 
         } else if (view == loginOut) {
             Authenticator.loginOut(Ip + "/api-application-registration/unregister",
@@ -208,7 +236,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } else if (view == getStatus) {
             testDetails(Ip);
         } else if (view == mUsers) {
-            updateView("isLogin:" + Authenticator.isLogin(), true);
+            Log.d(TAG, "  mDownloadid:" + mDownloadid);
+            int
+                    downloadStatus =
+                    DownloadManagerTest.getDownloadStatus(this.getApplicationContext(), mDownloadid);
+            Log.d(TAG, "  mDownloadid:" + mDownloadid+" downloadStatus:"+downloadStatus);
+
+            String
+                    downloadFile =
+                    DownloadManagerTest.getDownloadFile(this.getApplicationContext(), mDownloadid);
+            Log.d(TAG, "  mDownloadid:" + mDownloadid+" downloadFile:"+downloadFile);
+
+//            updateView("isLogin:" + Authenticator.isLogin(), true);
         } else if (view == shareText) {
             download();
 
@@ -363,7 +402,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             GetRequest<File>
                     request =
                     WSONet.<File>get(
-                            "http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk")
+                            downloadUrl)
                             .headers("aaa", "111")
                             .params("bbb", "222");
             Download.request("Tag", request)
