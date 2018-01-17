@@ -93,15 +93,17 @@ public class WSONet {
         okHttpClient = builder.build();
     }
 
-    private void addPublicData() {
-        HttpHeaders headers = new HttpHeaders();
+    private void addPublicData(boolean isaddpublicData) {
+        if(isaddpublicData){
+            HttpHeaders headers = new HttpHeaders();
        /* headers.put("imei", DeviceUtils.getDeviceId(this.getContext()));
         headers.put("appname", DeviceUtils.getAppName(this.getContext()));*/
-        HttpParams params = new HttpParams();
-        params.put("app_version", DeviceUtils.getAppVersion(this.getContext()));
-        params.put("app_versioncode", DeviceUtils.getAppCode(this.getContext()));
-        addCommonParams(params);
-        addCommonHeaders(headers);
+            HttpParams params = new HttpParams();
+            params.put("app_version", DeviceUtils.getAppVersion(this.getContext()));
+            params.put("app_versioncode", DeviceUtils.getAppCode(this.getContext()));
+            addCommonParams(params);
+            addCommonHeaders(headers);
+        }
     }
 
     public static WSONet getInstance() {
@@ -113,18 +115,25 @@ public class WSONet {
     }
 
     /**
-     * init WSONet on Application
      *
      * @param app
-     *
      * @return
      */
     public WSONet init(Application app) {
-        context = app;
-        addPublicData();
-        return this;
+       return init(app,false);
     }
 
+    /**
+     *
+     * @param app
+     * @param isaddpublicData
+     * @return
+     */
+    public WSONet init(Application app,boolean isaddpublicData) {
+        context = app;
+        addPublicData(isaddpublicData);
+        return this;
+    }
     /**
      * 是否输出netlog
      * @param TAG  指定log的tag
