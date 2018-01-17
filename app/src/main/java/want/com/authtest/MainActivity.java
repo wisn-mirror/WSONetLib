@@ -6,10 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,31 +20,32 @@ import android.widget.Toast;
 import com.want.wso2.WSONet;
 import com.want.wso2.auth.Authenticator;
 import com.want.wso2.auth.ChangePasswordCallBack;
+import com.want.wso2.auth.IdentityProxy;
 import com.want.wso2.bean.RegisterResponse;
 import com.want.wso2.bean.RegistrationProfileRequest;
 import com.want.wso2.bean.TokenResponse;
 import com.want.wso2.callback.JsonCallback;
+import com.want.wso2.callback.StringCallback;
 import com.want.wso2.convert.StringConvert;
-import com.want.wso2.db.DownloadManager;
 import com.want.wso2.db.UploadManager;
-import com.want.wso2.download.Download;
-import com.want.wso2.download.DownloadListener;
 import com.want.wso2.download.Upload;
 import com.want.wso2.interfaces.LoginExpireCallBack;
 import com.want.wso2.interfaces.RegisterListener;
+import com.want.wso2.model.HttpParams;
 import com.want.wso2.model.Progress;
 import com.want.wso2.model.Response;
-import com.want.wso2.request.GetRequest;
 import com.want.wso2.request.PostRequest;
 import com.want.wso2.task.XExecutor;
 import com.want.wso2.upload.UploadListener;
 import com.want.wso2.upload.UploadTask;
+import com.want.wso2.utils.Base64Utils;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import want.com.authtest.aaa.ConfigurationBean;
+import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -66,13 +67,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //   public final static String SCOPES = "default perm:svm:view";
     public final static String SCOPES = "perm:jpush:register perm:svm:view perm:users:credentials openid";
     public final static String
-            supplySCOPES ="perm:supply:view perm:supply:add perm:supply:delete perm:supply:update" +
-            "perm:inventory:add perm:inventory:delete perm:inventory:update perm:inventory:view ";
+            supplySCOPES ="perm:jpush:register perm:svm:view perm:svm:checkLocation perm:users:credentials openid";
     private static String PERM = SCOPES;
     private ScrollView mScroll_info;
     private TextView mUsers;
-//    private String downloadUrl="http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk";
-    private String downloadUrl="https://nodejs.org/dist/v8.9.3/node-v8.9.3.pkg";
+    //    private String downloadUrl="http://121.29.10.1/f5.market.mi-img.com/download/AppStore/0b8b552a1df0a8bc417a5afae3a26b2fb1342a909/com.qiyi.video.apk";
+    private String downloadUrl = "https://nodejs.org/dist/v8.9.3/node-v8.9.3.pkg";
     private long mDownloadid;
 
     @Override
@@ -135,7 +135,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         public void onReceive(Context context, Intent intent) {
             long referenceId = intent.getLongExtra(
                     android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            Log.d(TAG," downloadReceiver  downloadReceiver:"+referenceId);
+            Log.d(TAG, " downloadReceiver  downloadReceiver:" + referenceId);
         }
     };
 
@@ -147,12 +147,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Log.e(TAG, strUserName + "  " + strPassword);
         if (view == register) {
             String applicationName =
-                    "supply_android_" + DeviceUtils.getDeviceName(context);
+//                    "yunwang_android_" + DeviceUtils.getDeviceName(context);
+                    "yunwang_android_" + UUID.nameUUIDFromBytes("867516026498122".getBytes());
             RegistrationProfileRequest registrationProfileRequest = new RegistrationProfileRequest();
             registrationProfileRequest.setApplicationName(applicationName);
             registrationProfileRequest.setIsAllowedToAllDomains(false);
             registrationProfileRequest.setIsMappingAnExistingOAuthApp(false);
-            registrationProfileRequest.setTags(SUBSCRIBED_API);
+           // registrationProfileRequest.setTags(SUBSCRIBED_API);
             registrationProfileRequest.setTags(new String[]{"device_management"});
             registrationProfileRequest.setConsumerKey(null);
             registrationProfileRequest.setConsumerSecret(null);
@@ -188,6 +189,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                        }
                                    });
         } else if (view == getConfig) {
+            upload(Ip);
             /*WSONet.<String> get(Ip+"/api/machine/v1.0/settings")
                     .params("machineId",1)
                     .execute(new JsonCallback<String>() {
@@ -204,10 +206,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         }
                     });*/
 
-            mDownloadid =
+           /* mDownloadid =
                     DownloadManagerTest.startDownload(this.getApplicationContext(), downloadUrl, "aaa.apk");
             Log.d(TAG, "   DownloadManagerTest.startDownload:" + mDownloadid);
-
+*/
         } else if (view == loginOut) {
             Authenticator.loginOut(Ip + "/api-application-registration/unregister",
                                    "supply_android_" + com.want.wso2.utils.DeviceUtils.getDeviceId(this));
@@ -240,16 +242,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
             int
                     downloadStatus =
                     DownloadManagerTest.getDownloadStatus(this.getApplicationContext(), mDownloadid);
-            Log.d(TAG, "  mDownloadid:" + mDownloadid+" downloadStatus:"+downloadStatus);
+            Log.d(TAG, "  mDownloadid:" + mDownloadid + " downloadStatus:" + downloadStatus);
 
             String
                     downloadFile =
                     DownloadManagerTest.getDownloadFile(this.getApplicationContext(), mDownloadid);
-            Log.d(TAG, "  mDownloadid:" + mDownloadid+" downloadFile:"+downloadFile);
+            Log.d(TAG, "  mDownloadid:" + mDownloadid + " downloadFile:" + downloadFile);
 
 //            updateView("isLogin:" + Authenticator.isLogin(), true);
         } else if (view == shareText) {
-            download();
+
 
         } else if (view == shareTextdelete) {
             mTestResult.setText("");
@@ -281,8 +283,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    public void testDetails(final String ip){
-        WSONet.<String>get(ip+"/api/supply/v1.0/supply/details")
+    public void testDetails(final String ip) {
+        WSONet.<String>get(ip + "/api/supply/v1.0/supply/details")
                 .tag("homepage")
                 .params("factory_code", "93007736")
                 .execute(new JsonCallback<String>() {
@@ -297,7 +299,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             public void run() {
                                 testDetails(ip);
                             }
-                        },200);
+                        }, 200);
 
                     }
 
@@ -317,7 +319,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
 
-
     public void updateView(final String msg, final boolean isAppend) {
         runOnUiThread(new Runnable() {
             @Override
@@ -332,149 +333,86 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    public void download() {
+    public void upload(String ip) {
         try {
             Upload uploadTask = Upload.getInstance();
-            uploadTask.getThreadPool().setCorePoolSize(3);
-            //拿到断点的历史记录开始
-            List<Progress> all = UploadManager.getInstance().getAll();
-            uploadTask.restore(all);
+//            uploadTask.getThreadPool().setCorePoolSize(3);
+//            //拿到断点的历史记录开始
+//            List<Progress> all = UploadManager.getInstance().getAll();
+//            uploadTask.restore(all);
             //开始所有的任务
-            uploadTask.startAll();
-            PostRequest<String> postRequest = WSONet.<String>post("url")//
-                                                                        .headers("aaa", "111")//
-                                                                        .params("bbb", "222")//
-                                                                        .params("fileKey",
-                                                                        new File("file path"))//
-                                                                        .converter(new StringConvert());
-
-            UploadTask<String> task = Upload.request("file path", postRequest)//
-                                           .priority(new Random().nextInt(100))//
-                                           .extra1("额外的")//
-                                           .save();//保存到任务中
-            /**
-             * task注册上传监听
-             */
+            List<File> files=new ArrayList<>();
+            files.add(new File("/sdcard/Download/components1.png"));
+            files.add(new File("/sdcard/Download/components1.png"));
+            files.add(new File("/sdcard/Download/components1.png"));
+            files.add(new File("/sdcard/Download/components1.png"));
+            files.add(new File("/sdcard/Download/components1.png"));
+            files.add(new File("/sdcard/Download/components1.png"));
+            String json="{\"name\":\"点位名称331\",\"location_source\":\"点位来源\",\"address\":\"省市区街道\",\"coordinate\":\"a,b\",\"location_type\":1,\"other_location_name\":\"其他点位名称\",\"other_location_score\":22.5,\"placement_position\":1,\"other_placement_position_name\":\"其他摆放位置名称\",\"other_placement_position_score\":22.5,\"location_people_flow\":1,\"other_location_people_flow\":\"其他点位人流量\",\"other_location_people_flow_score\":22.5,\"age_ratio\":1,\"machine_num_two\":1,\"machine_num_one\":1,\"machine_num_three\":1,\"indoor_or_outdoor\":\"室内/室外\",\"indoor_outdoor_note\":\"室内室外备注\",\"has_power\":\"电源\",\"power_note\":\"电源备注\",\"wifi_status\":\"4G网络状况\",\"install_and_logistics\":\"布机和商品配送的物流限制\",\"total_score\":22.5,\"overall_merit\":\"综评\",\"app_assessment\":\"app评估\"}";
+            String encode = Base64Utils.encode(json.getBytes());
+            PostRequest<String> postRequest =
+                    WSONet.<String>post(ip + "/user/upload")
+//                            .headers("Content-Type", "multipart/form-data")
+                            .headers("Authorization", "Bearer 43214321432143214321432143214" )
+                            .headers("Accept", "application/json")
+                            .addFileParams("filekey",files)
+                            .params("filekey1",new File("/sdcard/Download/components1.png"))
+                            .params("filekey2",new File("/sdcard/Download/components2.png"))
+                            .params("filekey3",new File("/sdcard/Download/components3.png"))
+                            .params("filekey4",new File("/sdcard/Download/components4.png"))
+                            .params("checkLocationInfoJson", encode )
+                            .converter(new JsonCallback<String>() {
+                                @Override
+                                public void onSuccess(Response<String> response) {
+                                    updateView("onSuccess:" + response.body().toString(), true);
+                                }
+                                @Override
+                                public void onError(Response<String> response) {
+                                    super.onError(response);
+                                }
+                            });
+            UploadTask<String> task = Upload.request("upload", postRequest)//
+                                            .priority(new Random().nextInt(100))//
+                                            .extra1("额外的")//
+                                            .save();//保存到任务中
             task.register(new UploadListener<String>("TAG") {
                 @Override
                 public void onStart(Progress progress) {
+                    updateView("onStart:" + progress.currentSize, true);
                 }
                 @Override
                 public void onProgress(Progress progress) {
+                    updateView("onProgress:" + progress.currentSize, true);
                 }
                 @Override
                 public void onError(Progress progress) {
+                    updateView("onError:" + progress.currentSize, true);
                 }
                 @Override
                 public void onFinish(String s, Progress progress) {
+                    updateView("onFinish:" + progress.currentSize, true);
                 }
                 @Override
                 public void onRemove(Progress progress) {
+                    updateView("onRemove:" + progress.currentSize, true);
                 }
             });
             //开始上传
             task.start();
-            /**
-             * 设置全局监听
-             */
-            uploadTask.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
-                @Override
-                public void onAllTaskEnd() {
+//            /**
+//             * 设置全局监听
+//             */
+//            uploadTask.addOnAllTaskEndListener(new XExecutor.OnAllTaskEndListener() {
+//                @Override
+//                public void onAllTaskEnd() {
+//
+//                }
+//            });
+//            /**
+//             * 移除所有任务
+//             */
+//            Upload.getInstance().removeAll();
 
-                }
-            });
-            /**
-             * 移除所有任务
-             */
-            Upload.getInstance().removeAll();
-            //设置下载目录
-            Download download = Download.getInstance();
-
-            download.setFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/aaa/");
-            //自定义设置下载线程池
-            download.getThreadPool().setCorePoolSize(3);
-            //获取断点下载的进度
-            List<Progress> progressList = DownloadManager.getInstance().getAll();
-            //加载所有没有下载完成的任务
-            download.restore(progressList);
-            //开始所有的下载任务
-            download.startAll();
-            GetRequest<File>
-                    request =
-                    WSONet.<File>get(
-                            downloadUrl)
-                            .headers("aaa", "111")
-                            .params("bbb", "222");
-            Download.request("Tag", request)
-                    .save()
-                    .register(new DownloadListener("Tag") {
-                        /**
-                         * 开始下载监听
-                         * @param progress
-                         */
-                        @Override
-                        public void onStart(Progress progress) {
-                            Log.d(TAG,
-                                  "onStart  currentSize:" +
-                                  progress.currentSize +
-                                  "totalSize:" +
-                                  progress.totalSize);
-                        }
-
-                        /**
-                         * 下载进度监听
-                         * @param progress
-                         */
-                        @Override
-                        public void onProgress(Progress progress) {
-                            Log.d(TAG,
-                                  "onProgress  currentSize:" +
-                                  progress.currentSize +
-                                  "totalSize:" +
-                                  progress.totalSize);
-                        }
-
-                        /**
-                         * 下载错误监听
-                         * @param progress
-                         */
-                        @Override
-                        public void onError(Progress progress) {
-                            Log.d(TAG,
-                                  "onError  currentSize:" +
-                                  progress.currentSize +
-                                  "totalSize:" +
-                                  progress.totalSize);
-                        }
-
-                        /**
-                         * 下载完成监听
-                         * @param file
-                         * @param progress
-                         */
-                        @Override
-                        public void onFinish(File file, Progress progress) {
-                            Log.d(TAG,
-                                  "onFinish  currentSize:" +
-                                  progress.currentSize +
-                                  "totalSize:" +
-                                  progress.totalSize);
-                        }
-
-                        /**
-                         * 移除下载监听
-                         * @param progress
-                         */
-                        @Override
-                        public void onRemove(Progress progress) {
-                            Log.d(TAG,
-                                  "onRemove  currentSize:" +
-                                  progress.currentSize +
-                                  "totalSize:" +
-                                  progress.totalSize);
-                        }
-                    })
-                    .start();
         } catch (Exception e) {
             e.printStackTrace();
         }

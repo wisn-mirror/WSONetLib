@@ -120,7 +120,6 @@ public class Authenticator {
                                 registerListener.onFailure(response.message(), response.code());
                             }
                         } else {
-
                             registerListener.onFailure(response.message(), response.code());
                         }
                     }

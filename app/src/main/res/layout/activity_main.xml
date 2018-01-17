@@ -35,7 +35,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="url"
-                        android:text="http://10.0.33.0:8280"
+                        android:text="http://10.0.32.220:8080"
                         android:textColor="#000"
                         android:textSize="16dp" />
                 </LinearLayout>
@@ -54,7 +54,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="用户名"
-                        android:text="wang1"
+                        android:text="duanshutao02"
                         android:textColor="#000"
                         android:textSize="16dp" />
 
@@ -65,7 +65,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="密码"
-                        android:text="123456"
+                        android:text="duanshutao"
                         android:textColor="#000"
                         android:textSize="16dp" />
                     <EditText
