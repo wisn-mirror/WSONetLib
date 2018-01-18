@@ -189,7 +189,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                        }
                                    });
         } else if (view == getConfig) {
-            upload(Ip);
+            upload(Ip,strUserName);
             /*WSONet.<String> get(Ip+"/api/machine/v1.0/settings")
                     .params("machineId",1)
                     .execute(new JsonCallback<String>() {
@@ -333,7 +333,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    public void upload(String ip) {
+    public void upload(String ip,String aaa) {
         try {
             Upload uploadTask = Upload.getInstance();
 //            uploadTask.getThreadPool().setCorePoolSize(3);
@@ -344,14 +344,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
             List<File> files=new ArrayList<>();
             files.add(new File("/sdcard/Download/components1.png"));
             files.add(new File("/sdcard/Download/components1.png"));
-            files.add(new File("/sdcard/Download/components1.png"));
-            files.add(new File("/sdcard/Download/components1.png"));
-            files.add(new File("/sdcard/Download/components1.png"));
-            files.add(new File("/sdcard/Download/components1.png"));
-            String json="{\"name\":\"点位名称331\",\"location_source\":\"点位来源\",\"address\":\"省市区街道\",\"coordinate\":\"a,b\",\"location_type\":1,\"other_location_name\":\"其他点位名称\",\"other_location_score\":22.5,\"placement_position\":1,\"other_placement_position_name\":\"其他摆放位置名称\",\"other_placement_position_score\":22.5,\"location_people_flow\":1,\"other_location_people_flow\":\"其他点位人流量\",\"other_location_people_flow_score\":22.5,\"age_ratio\":1,\"machine_num_two\":1,\"machine_num_one\":1,\"machine_num_three\":1,\"indoor_or_outdoor\":\"室内/室外\",\"indoor_outdoor_note\":\"室内室外备注\",\"has_power\":\"电源\",\"power_note\":\"电源备注\",\"wifi_status\":\"4G网络状况\",\"install_and_logistics\":\"布机和商品配送的物流限制\",\"total_score\":22.5,\"overall_merit\":\"综评\",\"app_assessment\":\"app评估\"}";
+            files.add(new File("/sdcard/Download/abc1.xlsx"));
+            files.add(new File("/sdcard/Download/components3.png"));
+            files.add(new File("/sdcard/Download/components4.png"));
+            String json="{\"name\":\"点位名称"+aaa+"\",\"location_source\":\"点位来源\",\"address\":\"省市区街道\",\"coordinate\":\"a,b\",\"location_type\":1,\"other_location_name\":\"其他点位名称\",\"other_location_score\":22.5,\"placement_position\":1,\"other_placement_position_name\":\"其他摆放位置名称\",\"other_placement_position_score\":22.5,\"location_people_flow\":1,\"other_location_people_flow\":\"其他点位人流量\",\"other_location_people_flow_score\":22.5,\"age_ratio\":1,\"machine_num_two\":1,\"machine_num_one\":1,\"machine_num_three\":1,\"indoor_or_outdoor\":\"室内/室外\",\"indoor_outdoor_note\":\"室内室外备注\",\"has_power\":\"电源\",\"power_note\":\"电源备注\",\"wifi_status\":\"4G网络状况\",\"install_and_logistics\":\"布机和商品配送的物流限制\",\"total_score\":22.5,\"overall_merit\":\"综评\",\"app_assessment\":\"app评估\"}";
             String encode = Base64Utils.encode(json.getBytes());
+            Upload.getInstance().removeAll();
             PostRequest<String> postRequest =
-                    WSONet.<String>post(ip + "/user/upload")
+                    WSONet.<String>post(ip + "/userdata/uploadicon")
 //                            .headers("Content-Type", "multipart/form-data")
                             .headers("Authorization", "Bearer 43214321432143214321432143214" )
                             .headers("Accept", "application/json")
@@ -360,7 +360,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             .params("filekey2",new File("/sdcard/Download/components2.png"))
                             .params("filekey3",new File("/sdcard/Download/components3.png"))
                             .params("filekey4",new File("/sdcard/Download/components4.png"))
-                            .params("checkLocationInfoJson", encode )
+                            .params("testparams", encode )
                             .converter(new JsonCallback<String>() {
                                 @Override
                                 public void onSuccess(Response<String> response) {

@@ -35,7 +35,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="url"
-                        android:text="http://10.0.32.220:8080"
+                        android:text="http://10.0.34.25:8080"
                         android:textColor="#000"
                         android:textSize="16dp" />
                 </LinearLayout>

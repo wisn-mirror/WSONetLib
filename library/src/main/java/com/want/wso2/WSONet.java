@@ -28,6 +28,7 @@ import com.want.wso2.utils.WSOLog;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
